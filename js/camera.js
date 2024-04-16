@@ -2,7 +2,6 @@
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Media_Capture_and_Streams_API/Taking_still_photos
 
-(() => {
     // The width and height of the captured photo. We will set the
     // width to the value defined here, but the height will be
     // calculated based on the aspect ratio of the input stream.
@@ -21,7 +20,6 @@
     let video = null;
     let canvas = null;
     let photo = null;
-    let startbutton = null;
   
     function showViewLiveResultButton() {
       if (window.self !== window.top) {
@@ -37,6 +35,51 @@
       }
       return false;
     }
+
+    function toggleCamera() {
+
+      if(video == null) {
+        setCameraButtonState('please wait...');
+        startCamera();
+        return;
+      }
+      
+      console.log(`Paused: ${video?.paused}`);
+      if(video?.paused == false) {
+        video.pause();
+        setCameraButtonState('Resume Camera');
+      } else {
+        video.play();
+        setCameraButtonState('Pause Camera');
+      }
+    }
+
+    // should do an enum here
+    function setCameraButtonState(state) {
+      
+      const btnCamera = document.getElementById("btnCamera");
+      btnCamera.innerText = state;
+    }
+
+    function setupVideoStream(video) {
+
+      if (!streaming) {
+        height = video.videoHeight / (video.videoWidth / width);
+
+        // Firefox currently has a bug where the height can't be read from
+        // the video, so we will make assumptions if this happens.
+
+        if (isNaN(height)) {
+          height = width / (4 / 3);
+        }
+
+        video.setAttribute("width", width);
+        video.setAttribute("height", height);
+        canvas.setAttribute("width", width);
+        canvas.setAttribute("height", height);
+        streaming = true;
+      }
+    }
   
     function startCamera() {
       if (showViewLiveResultButton()) {
@@ -45,13 +88,17 @@
       video = document.getElementById("video");
       canvas = document.getElementById("canvas");
       photo = document.getElementById("photo");
-      startbutton = document.getElementById("startbutton");
   
       navigator.mediaDevices
-        .getUserMedia({ video: true, audio: false })
+        .getUserMedia({
+          audio: false,
+          video: {       
+            width: { min: 320, ideal: 1280 }
+          }
+        })
         .then((stream) => {
           video.srcObject = stream;
-          video.play();
+          toggleCamera();
         })
         .catch((err) => {
           console.error(`An error occurred: ${err}`);
@@ -60,26 +107,12 @@
       video.addEventListener(
         "canplay",
         (ev) => {
-          if (!streaming) {
-            height = video.videoHeight / (video.videoWidth / width);
-  
-            // Firefox currently has a bug where the height can't be read from
-            // the video, so we will make assumptions if this happens.
-  
-            if (isNaN(height)) {
-              height = width / (4 / 3);
-            }
-  
-            video.setAttribute("width", width);
-            video.setAttribute("height", height);
-            canvas.setAttribute("width", width);
-            canvas.setAttribute("height", height);
-            streaming = true;
-          }
+          setupVideoStream(video);
         },
         false,
       );
   
+      const startbutton = document.getElementById("startbutton");
       startbutton.addEventListener(
         "click",
         (ev) => {
@@ -124,10 +157,5 @@
       }
     }
   
-    // Set up our event listener to run the startup process
-    // once loading is complete.
-    // window.addEventListener("load", startCamera, false);
-
-    window.startCamera = startCamera;
-  })();
+    // window.startCamera = startCamera;
   
