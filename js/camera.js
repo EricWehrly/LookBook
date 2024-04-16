@@ -16,7 +16,7 @@
     let streaming = false;
   
     // The various HTML elements we need to configure or control. These
-    // will be set by the startup() function.
+    // will be set by the startCamera() function.
   
     let video = null;
     let canvas = null;
@@ -38,7 +38,7 @@
       return false;
     }
   
-    function startup() {
+    function startCamera() {
       if (showViewLiveResultButton()) {
         return;
       }
@@ -126,6 +126,8 @@
   
     // Set up our event listener to run the startup process
     // once loading is complete.
-    // window.addEventListener("load", startup, false);
+    // window.addEventListener("load", startCamera, false);
+
+    window.startCamera = startCamera;
   })();
   
