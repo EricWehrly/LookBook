@@ -93,7 +93,8 @@
         .getUserMedia({
           audio: false,
           video: {       
-            width: { min: 320, ideal: 1280 }
+            width: { min: 320, ideal: 1280 },
+            facingMode: "user"
           }
         })
         .then((stream) => {

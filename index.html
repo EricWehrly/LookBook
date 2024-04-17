@@ -1,7 +1,17 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <head><title>Monica's LookBook</title>
 
+    <script type="module">
+      import { getOriginPrivateDirectory } from 'https://cdn.jsdelivr.net/npm/file-system-access/lib/es2018.js'
+    </script>
+    <script src="./js/folder.js" type="module"></script>
+      
+      <!--
     <script src="./js/polyfill.mjs" type="module"></script>
+    -->
     <link rel="stylesheet" href="style.css" />
 </head>
   <body>
@@ -20,6 +30,10 @@
   <img id="photo" alt="The screen capture will appear in this box." />
 </div>
 
+<button onclick="getNewFileHandle()">Save (Eventually)</button>
+<button id="ponyLoad">Pony Load</button>
+
+<div id="messageBox"></div>
     
 <script type="text/javascript" src="js/index.js"></script>
 <script type="text/javascript" src="js/camera.js"></script>

@@ -48,21 +48,24 @@ function addImage(name, file) {
   }
   
   async function allowedChecked(event) {
-    // console.log(event);
+    
     var checkbox = event.srcElement;
     var id = checkbox.id;
-    var checked = checkbox.checked;
-    // console.log(`Checkbox ${id} checked: ${checked}`);
     
     var carName = id.split('_')[0];
     var fileHandle = fileHandles[carName];
-    // console.log(fileHandle);
     
-    // var newAllowed = fileHandle["allowedOrders"];
-    // var newContents = fileHandle["contents"].replace(
     var newContents = getNewContents(carName, fileHandle);
     fileHandle.contents = newContents;
     await writeFile(fileHandle.handle, newContents);
+  }
+  
+  async function writeFile(fileHandle, contents) {
+    const writable = await fileHandle.createWritable();
+    var result1 = await writable.write(contents);
+    var result2 = await writable.close();
+    
+    console.log(`Success? ${result1} ${result2}`);
   }
   
   async function listFiles() {
@@ -79,6 +82,29 @@ function addImage(name, file) {
     
     // console.log(fileHandles);
   }
+  
+  // https://developer.chrome.com/docs/capabilities/web-apis/file-system-access#create_a_new_file
+  async function getNewFileHandle() {
+    const options = {
+      types: [
+        {
+          description: 'Image Files',
+          accept: {
+            'image/*': [],
+          },
+        },
+      ],
+    };
+    try {
+    const handle = await window.showSaveFilePicker(options);
+    console.log(handle);
+    writeMessage(handle);
+    return handle;
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+  
 
   async function handleDirectory(dirHandle, entry) {
           var configCount = 0;
@@ -117,4 +143,10 @@ function addImage(name, file) {
         || fileType == ''
         || ignored_types.includes(fileType)
         || fileType.indexOf('application') > -1
+  }
+
+  function writeMessage(message) {
+
+    const messageBox = document.getElementById("messageBox");
+    messageBox.innerText += JSON.stringify(message);
   }
