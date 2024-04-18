@@ -1,0 +1,7 @@
+OAuth CLIENT_ID
+252542497123-6r2k4eh8sn7p2tn8mdujsoofc5fvjgn5.apps.googleusercontent.com
+Client Secret
+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
+
+API Key
+AIzaSyDYEwsynZLswhuZqPpKllhrb7zl7GBQo0g
