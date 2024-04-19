@@ -21,21 +21,4 @@ header.innerHTML = await fetchHtmlAsText(`${root}pages/header.html`);
     if(photoDiv) {
         photoDiv.innerHTML = await fetchHtmlAsText(`${root}components/photos/photos.html`);
     }
-
-    /*
-    const taggies = document.getElementsByClassName('tags');
-    for(var tags of taggies) {
-        console.log(tags);
-        let url = `${root}components/tags/tags.mjs?`
-            + getAttributesAsQueryParams(tags);
-        // if(tags.objecttype) url += `objecttype=${tags.objecttype}&`;
-        // if(tags[tags.objecttype]) url += `${tags.objecttype}=${tags[tags.objecttype]}&`;
-        console.log(url);
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = url;
-        tags.appendChild(script);
-        // tags.innerHTML = await fetchHtmlAsText(url);
-    }
-    */
 })();

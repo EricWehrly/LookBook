@@ -1,8 +1,17 @@
 <script type="module" src="../js/loader.mjs"></script>
 
-<h2>Today's Look</h2>
+<!-- 
+<script type="module" src="../components/looks/looks.mjs"></script>
+-->
+<script type="module">
+    import { getLook } from '../components/looks/looks.mjs'
+    const look = getLook();
+    console.log(look);
+</script>
 
-Tags: add a tag
+<h2 id="look-name">Today's Look</h2>
+
+<div class="tags"></div>
 
 <div id="photos"></div>
 

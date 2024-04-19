@@ -1,3 +1,4 @@
 /* Kind of a cheap hack to import everything */
 @import url('./colors.css');
 @import url('../components/photos/photos.css');
+@import url('../components/tags/tags.css');
