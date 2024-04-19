@@ -21,7 +21,6 @@
         /* exported handleAuthClick */
         /* exported handleSignoutClick */
 
-        // TODO(developer): Set to client ID and API key from the Developer Console
         const CLIENT_ID = '252542497123-6r2k4eh8sn7p2tn8mdujsoofc5fvjgn5.apps.googleusercontent.com';
         const API_KEY = 'AIzaSyDYEwsynZLswhuZqPpKllhrb7zl7GBQo0g';
 
@@ -96,16 +95,13 @@
          *  Sign in the user upon button click.
          */
         function handleAuthClick() {
-            console.log("1")
 
             if (gapi.client.getToken() === null) {
-                console.log("2")
                 // Prompt the user to select a Google Account and ask for consent to share their data
                 // when establishing a new session.
-                // tokenClient.requestAccessToken({ prompt: 'consent' });
-                tokenClient.requestAccessToken();
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+                // tokenClient.requestAccessToken();
             } else {
-                console.log("3")
                 // Skip display of account chooser and consent dialog for an existing session.
                 tokenClient.requestAccessToken({ prompt: '' });
             }
@@ -125,6 +121,9 @@
             }
         }
 
+        // documentation:
+        // https://developers.google.com/photos/library/reference/rest/v1/albums#Album
+
         /**
          * Print metadata for first 10 Albums.
          */
@@ -133,9 +132,10 @@
             try {
                 response = await gapi.client.photoslibrary.albums.list({
                     'pageSize': 10,
-                    'fields': 'albums(id,title)',
+                    'fields': 'albums(id,title,coverPhotoBaseUrl)',
                 });
             } catch (err) {
+                console.error(err);
                 document.getElementById('content').innerText = err.message;
                 return;
             }
@@ -146,7 +146,7 @@
             }
             // Flatten to string to display
             const output = albums.reduce(
-                (str, album) => `${str}${album.title} (${album.id}\n`,
+                (str, album) => `${str}${album.title} (${album.coverPhotoBaseUrl}\n`,
                 'albums:\n');
             document.getElementById('content').innerText = output;
         }
