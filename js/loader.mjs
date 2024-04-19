@@ -14,3 +14,11 @@ export async function fetchHtmlAsText(url) {
 const header = document.createElement('div');
 document.body.appendChild(header);
 header.innerHTML = await fetchHtmlAsText(`${root}pages/header.html`);
+
+(async () => {
+
+    const photoDiv = document.getElementById('photos');
+    if(photoDiv) {
+        photoDiv.innerHTML = await fetchHtmlAsText(`${root}components/photos/photos.html`);
+    }
+})();
