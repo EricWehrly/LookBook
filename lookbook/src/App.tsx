@@ -1,14 +1,14 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
-import Look from './components/looks/look';
+import { default as Look, LookOptions } from './components/looks/look';
 
-const look = new Look({});
+// TODO: Load look from persistence
 
 function App() {
   return (
     <div className="App">
-      <Look />
+      <Look name="Today's Look" />
     </div>
   );
 }

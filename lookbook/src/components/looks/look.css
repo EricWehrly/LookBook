@@ -1,0 +1,14 @@
+div.photo {
+    display: inline-block;
+    border: 1px dashed;
+    min-width: 40px;
+    min-height: 40px;
+    text-align: center;
+    font-size: 2em;
+
+    cursor: pointer;
+}
+
+div.tags span:not(.tag) {
+    font-weight: bold;
+}
