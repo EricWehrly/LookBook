@@ -1,10 +1,14 @@
 import { Component } from "react";
 
-export default class Tags extends Component {
+interface TagProps {
+    tags? : string[]
+}
 
-    state = {
-        tags: []
-    }
+interface TagState {
+    tags : string[]
+};
+
+export default class Tags extends Component<TagProps, TagState> {
 
     render() {
 
@@ -24,6 +28,10 @@ export default class Tags extends Component {
         // const name = window.prompt('Give your tag a name!');
         const name = 'test';
         if(name) {
+            if(this.state.tags && this.state.tags.includes(name)) {
+                console.warn('exists.');
+                return;
+            }
             this.setState({
                 tags: [
                     ...this.state.tags,
@@ -34,13 +42,17 @@ export default class Tags extends Component {
         console.log(this.state.tags);
     }
 
-    constructor(tags : string[]) {
+    constructor(props : TagProps) {
 
-        super(tags);
-        if(Array.isArray(tags)) {
+        super(props);
+        if(Array.isArray(props.tags)) {
             this.setState({
-                tags: tags
+                tags: props.tags
             });
+        } else {
+            this.state = {
+                tags: []
+            }
         }
     }
 }
