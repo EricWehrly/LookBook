@@ -1,13 +1,15 @@
-import { Component, useState } from "react";
+import { Component } from "react";
 
 export default class Tags extends Component {
 
-    tags : string[] = [];
+    state = {
+        tags: []
+    }
 
     render() {
 
-        const tagElements = this.tags?.length ? this.tags.map(tag => 
-            <span className="tag">{tag}</span>
+        const tagElements = this.state.tags?.length ? this.state.tags.map(tag => 
+            <span key={tag} className="tag">{tag}</span>
         ) : '';
 
         return <div className="tags">
@@ -19,16 +21,26 @@ export default class Tags extends Component {
 
     addTag() {
 
-        const name = window.prompt('Give your tag a name!');
+        // const name = window.prompt('Give your tag a name!');
+        const name = 'test';
         if(name) {
-            this.tags.push(name);
+            this.setState({
+                tags: [
+                    ...this.state.tags,
+                    name
+                ]
+            });
         }
-        console.log(this.tags);
+        console.log(this.state.tags);
     }
 
     constructor(tags : string[]) {
 
         super(tags);
-        if(Array.isArray(tags)) this.tags = tags;
+        if(Array.isArray(tags)) {
+            this.setState({
+                tags: tags
+            });
+        }
     }
 }
