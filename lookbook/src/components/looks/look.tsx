@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Tags from '../tags/tags';
 import './look.css';
 
 export interface LookOptions {
@@ -9,14 +10,12 @@ export default class Look extends Component<LookOptions> {
 
     name : String;
     instances : LookInstance[] = [];
-    #currentInstance? : LookInstance;
+    private currentInstance? : LookInstance;
 
     render() {
         return <div className="look">
             <h2>{this.name}</h2>
-            <div className="tags">
-                <span>Tags:</span>
-            </div>
+            <Tags />
             <h3>Photos:</h3>
             <div className="photo">+</div>
         </div>
@@ -28,7 +27,7 @@ export default class Look extends Component<LookOptions> {
 
         // TODO: fix later ...
         this.instances.push(new LookInstance());
-        this.#currentInstance = this.instances[0];
+        this.currentInstance = this.instances[0];
     }
 }
 

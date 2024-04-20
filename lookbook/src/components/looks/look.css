@@ -12,3 +12,12 @@ div.photo {
 div.tags span:not(.tag) {
     font-weight: bold;
 }
+
+.tag {
+    padding: 4px;
+    margin: .2em;
+    border: 1px solid black;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
