@@ -1,21 +1,22 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 
 export interface LookOptions {
-    name : String
+    name : string
 }
 
 export default class Look extends Component<LookOptions> {
 
-    name : String;
+    private id : string;
+    name : string;
     instances : LookInstance[] = [];
     private currentInstance? : LookInstance;
 
     render() {
         return <div className="look">
             <h2>{this.name}</h2>
-            <Tags />
+            <Tags parentTypeName='look' parentId={this.id} />
             <h3>Photos:</h3>
             <div className="photo">+</div>
         </div>
@@ -23,6 +24,7 @@ export default class Look extends Component<LookOptions> {
 
     constructor(options: LookOptions) {
         super(options);
+        this.id = crypto.randomUUID();
         this.name = options.name;
 
         // TODO: fix later ...
