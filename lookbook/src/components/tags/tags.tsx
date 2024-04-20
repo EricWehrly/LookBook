@@ -15,7 +15,6 @@ export default class Tags extends Component<TagProps, TagState> {
 
     private parentTypeName : string;
     private parentId : string;
-    private shouldSaveOnNextRender = false;
 
     private get storageKey() {
         return `${this.parentTypeName}.${this.parentId}.tags`;
@@ -26,13 +25,6 @@ export default class Tags extends Component<TagProps, TagState> {
         const tagElements = this.state.tags?.length ? this.state.tags.map(tag => 
             <span key={tag} className="tag">{tag}</span>
         ) : '';
-
-        // this is a weird hack I need to learn better
-        // https://stackoverflow.com/a/63266111/5450892
-        if(this.shouldSaveOnNextRender) {
-            localStorage.setItem(this.storageKey, JSON.stringify(this.state.tags));
-            this.shouldSaveOnNextRender = false;
-        }
 
         return <div className="tags">
             <span>Tags:</span>
@@ -50,13 +42,14 @@ export default class Tags extends Component<TagProps, TagState> {
                 console.warn('exists.');
                 return;
             }
+            const newTags = [
+                ...this.state.tags,
+                name
+            ];
             this.setState({
-                tags: [
-                    ...this.state.tags,
-                    name
-                ]
+                tags: newTags
             });
-            this.shouldSaveOnNextRender = true;
+            localStorage.setItem(this.storageKey, JSON.stringify(newTags));
         }
         console.log(this.state.tags);
     }
