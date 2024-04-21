@@ -8,7 +8,7 @@ import { default as Look, LookOptions } from './components/looks/look';
 function App() {
   return (
     <div className="App">
-      <Look name="Today's Look" />
+      <Look />
     </div>
   );
 }

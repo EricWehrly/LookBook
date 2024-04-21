@@ -17,7 +17,7 @@ export default class Tags extends Component<TagProps, TagState> {
     private parentId : string;
 
     private get storageKey() {
-        return `${this.parentTypeName}.${this.parentId}.tags`;
+        return `${this.parentId}.tags`;
     }
 
     render() {
