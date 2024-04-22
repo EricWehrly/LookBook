@@ -1,40 +1,69 @@
-import { Component } from 'react';
+import { Component, SyntheticEvent, useState } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 import LookModel from './lookModel';
 import { GetLook } from './looks';
+import { EditText, onSaveProps } from 'react-edit-text';
+import 'react-edit-text/dist/index.css';
+
+interface LookState {
+    name? : string,
+    setText: { (value: React.SetStateAction<string>): void; }
+};
 
 export default class Look extends Component<LookModel> implements LookModel {
 
     // tbh we probly only care about LookModels
     static Looks : { [id: string] : Look } = {};
 
-    static FromState(id : string) {
-
-        return null;
-    }
-
     private _id : string;
-    name? : string;
+    name?: string;
+
     // TODO: (big lift) Move 'created' to instance ...
     created!: Date; // TODO: the exclamation asserts it's "definitely" getting assigned in constructor...
     instances : LookInstance[] = [];
     private currentInstance? : LookInstance;
+    state : LookState = {
+        name: '',
+        setText: this.setText.bind(this)
+    };
+
+    private setText(value: React.SetStateAction<string>) {
+        this.name = value.toString();
+        this.setState({
+            name: value.toString()
+        });
+    }
 
     get id() { return this._id; }
 
     private get storageKey() {
         return `${this._id}`;
     }
+    // <h2>{this.name}</h2>
+    // <h2 contentEditable="true" onInput={this.h2Edited.bind(this)}>{this.name || "Today's Look"}</h2>
 
     render() {
         // TODO: Name should be the selected date if null ... today if date is today
         return <div className="look">
-            <h2>{this.name || "Today's Look"}</h2>
+          <EditText
+            name='textbox'
+            value={this.name}
+            onChange={(e) => this.handleChange(e, this.state.setText)}
+            onSave={this.handleSave.bind(this)}
+          />
             <Tags parentTypeName='look' parentId={this._id} />
             <h3>Photos:</h3>
             <div className="photo">+</div>
         </div>
+    }
+
+    handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setFn: { (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (arg0: any): void; }) => {
+      if(setFn) setFn(e.target.value);
+    };
+
+    handleSave(props: onSaveProps) {
+        this.save();
     }
 
     constructor(options: LookModel) {
@@ -50,7 +79,16 @@ export default class Look extends Component<LookModel> implements LookModel {
         } else {
             this._id = crypto.randomUUID();
 
-            if(options.name) this.name = options.name;
+            if(options.name) {
+                this.name = options.name;
+            } else {
+                this.name = this.nameFromDate(new Date());
+            }
+            // TODO: somehow track "name" with state
+            this.state = {
+                name: this.name,
+                setText: this.state.setText
+            };
             if(options.created) this.created = options.created;
             else this.created = new Date()
 
@@ -73,7 +111,15 @@ export default class Look extends Component<LookModel> implements LookModel {
             throw 'bad';
         }
 
+        // TODO: somehow track "name" with state
         this.name = lookModel.name;
+        if(!this.name) {
+            this.name = this.nameFromDate(this.created);
+        }
+        this.state = {
+            name: lookModel.name,
+            setText: this.state.setText
+        };
 
         if(lookModel.created) {
             this.created = lookModel.created;
@@ -83,12 +129,21 @@ export default class Look extends Component<LookModel> implements LookModel {
 
     private save() {
 
+        console.log(`saving look ${this.id}`);
+
         const storageObject = {
             id: this._id,
             name: this.name,
             created: this.created
         };
         localStorage.setItem(this.storageKey, JSON.stringify(storageObject));
+    }
+
+    private nameFromDate(date: Date) : string {
+
+        const name = "Today's Look";
+
+        return name;
     }
 }
 
