@@ -46,13 +46,14 @@ export default class GooglePhotosAuthButton extends Component {
 
         let content;
         if(this.state.gapiInited && this.state.gisInited) {
-            content = <button id="authorize_button" onClick={this.#handleAuthClick}>Authorize</button>
+            content = <button id="authorize_button" onClick={this.#handleAuthClick.bind(this)}>Authorize</button>
         }
 
         // <button id="signout_button" onClick={this.#handleSignoutClick}>Sign Out</button>
 
         return <div className="googlePhotosAuthButton">            
             {content}
+            <div id="albums"></div>
         </div>
     }
     
@@ -81,11 +82,10 @@ export default class GooglePhotosAuthButton extends Component {
      * Callback after Google Identity Services are loaded.
      */
     #gisLoaded() {
-        console.log('gis loaded');
         this.tokenClient = window.google.accounts.oauth2.initTokenClient({
             client_id: this.#CLIENT_ID,
             scope: this.#SCOPES,
-            callback: this.#handleCallback,
+            callback: this.#handleCallback.bind(this),
         });
         this.setState({
             gisInited: true,
@@ -95,13 +95,13 @@ export default class GooglePhotosAuthButton extends Component {
     }
 
     async #handleCallback(resp) {
-        console.log("callback time")
         if (resp.error !== undefined) {
             throw (resp);
         }
-        document.getElementById('signout_button').style.visibility = 'visible';
-        document.getElementById('authorize_button').innerText = 'Refresh';
-        await this.#listAlbums();
+        // TODO:
+        // document.getElementById('signout_button').style.visibility = 'visible';
+        // document.getElementById('authorize_button').innerText = 'Refresh';
+        await this.#listAlbums.bind(this)();
     }
 
     /**
@@ -149,18 +149,18 @@ export default class GooglePhotosAuthButton extends Component {
             });
         } catch (err) {
             console.error(err);
-            document.getElementById('content').innerText = err.message;
+            document.getElementById('albums').innerText = err.message;
             return;
         }
         const albums = response.result.albums;
         if (!albums || albums.length == 0) {
-            document.getElementById('content').innerText = 'No albums found.';
+            document.getElementById('albums').innerText = 'No albums found.';
             return;
         }
         // Flatten to string to display
         const output = albums.reduce(
             (str, album) => `${str}${album.title} (${album.coverPhotoBaseUrl}\n`,
             'albums:\n');
-        document.getElementById('content').innerText = output;
+        document.getElementById('albums').innerText = output;
     }
 }
