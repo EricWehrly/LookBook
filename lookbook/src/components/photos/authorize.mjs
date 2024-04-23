@@ -99,9 +99,6 @@ export default class GooglePhotosAuthButton extends Component {
         // document.getElementById('signout_button').style.visibility = 'visible';
         // document.getElementById('authorize_button').innerText = 'Refresh';
         GoogleAuthService.authorized = true;
-        console.log('authorize complete');
-        window.dispatchEvent(new CustomEvent('google-authenticated'));
-        // TODO: Force state update?
     }
 
     /**

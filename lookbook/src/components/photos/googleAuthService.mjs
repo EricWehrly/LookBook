@@ -6,6 +6,7 @@ export default class GoogleAuthService {
     }
     static set authorized(value) {
         GoogleAuthService.#authorized = value;
+        window.dispatchEvent(new CustomEvent('google-authenticated'));
     }
 
     constructor() {
