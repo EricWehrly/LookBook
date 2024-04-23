@@ -1,4 +1,4 @@
-import { Component, SyntheticEvent, useState } from 'react';
+import { ChangeEvent, Component, useState } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 import LookModel from './lookModel';
@@ -55,6 +55,7 @@ export default class Look extends Component<LookModel> implements LookModel {
         return <div className="look">
           <EditText
             name='textbox'
+            className='look-title'
             value={this.name}
             onChange={(e) => this.handleChange(e, this.state.setText)}
             onSave={this.handleSave.bind(this)}
@@ -62,6 +63,7 @@ export default class Look extends Component<LookModel> implements LookModel {
             <Tags parentTypeName='look' parentId={this._id} />
             <h3 title={this.currentInstance?.photos?.length?.toString()}>Photos:</h3>
             {photoContent}
+            <div id="filePickerCompanion"></div>
         </div>
     }
 
@@ -81,9 +83,27 @@ export default class Look extends Component<LookModel> implements LookModel {
             <AlbumPicker  />
             {photos}
             <div className="photo">+</div>
-            <input type="file" id="input" multiple />
+            <input type="file" id="fileUpload" multiple onChange={this.#handleFileChange.bind(this)} />
         </>
     }
+
+    #handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.files);
+      if (event.target.files) {
+        // setFile(e.target.files[0]);
+        const file = event.target.files[0];
+        // const url = URL.createObjectURL(await file.getFile());
+        const url = URL.createObjectURL(file);
+        console.log(url);
+        // this.currentInstance?.photos
+
+        const filePickerCompanion = document.getElementById('filePickerCompanion');
+        const img = document.createElement('img');
+        img.src = url;
+        img.height = 120;
+        filePickerCompanion?.appendChild(img);
+      }
+    };
 
     handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setFn: { (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (arg0: any): void; }) => {
       if(setFn) setFn(e.target.value);
