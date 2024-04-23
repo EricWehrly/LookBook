@@ -113,7 +113,7 @@ export default class GooglePhotosAuthButton extends Component {
             // tokenClient.requestAccessToken();
         } else {
             // Skip display of account chooser and consent dialog for an existing session.
-            this.#tokenClient.requestAccessToken({ prompt: '' });
+            this.#tokenClient.requestAccessToken();
         }
     }
 
