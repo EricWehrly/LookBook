@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { default as GoogleAuthService } from './googleAuthService.mjs';
 
 export default class GooglePhotosAuthButton extends Component {
 
@@ -13,9 +14,7 @@ export default class GooglePhotosAuthButton extends Component {
     // const SCOPES = 'https://www.googleapis.com/auth/photoslibrary.readonly';
     #SCOPES = 'https://www.googleapis.com/auth/photoslibrary https://www.googleapis.com/auth/photoslibrary.readonly https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata';
 
-    // #gapiInited = false;
-    // #gisInited = false;
-    tokenClient;
+    #tokenClient;
 
     state = {
         gapiInited: false,
@@ -46,7 +45,7 @@ export default class GooglePhotosAuthButton extends Component {
 
         let content;
         if(this.state.gapiInited && this.state.gisInited) {
-            content = <button id="authorize_button" onClick={this.#handleAuthClick.bind(this)}>Authorize</button>
+            content = <button id="authorize_button" onClick={this.#handleAuthClick.bind(this)}>Authorize to add photos</button>
         }
 
         // <button id="signout_button" onClick={this.#handleSignoutClick}>Sign Out</button>
@@ -71,7 +70,6 @@ export default class GooglePhotosAuthButton extends Component {
             discoveryDocs: [this.#DISCOVERY_DOC],
         });
         this.state.gapiInited = true;
-        // this.#maybeEnableButtons();
         this.setState({
             gapiInited: true,
             gisInited: this.state.gisInited
@@ -82,7 +80,7 @@ export default class GooglePhotosAuthButton extends Component {
      * Callback after Google Identity Services are loaded.
      */
     #gisLoaded() {
-        this.tokenClient = window.google.accounts.oauth2.initTokenClient({
+        this.#tokenClient = window.google.accounts.oauth2.initTokenClient({
             client_id: this.#CLIENT_ID,
             scope: this.#SCOPES,
             callback: this.#handleCallback.bind(this),
@@ -91,7 +89,6 @@ export default class GooglePhotosAuthButton extends Component {
             gisInited: true,
             gapiInited: this.state.gapiInited
         });
-        // this.#maybeEnableButtons();
     }
 
     async #handleCallback(resp) {
@@ -101,7 +98,10 @@ export default class GooglePhotosAuthButton extends Component {
         // TODO:
         // document.getElementById('signout_button').style.visibility = 'visible';
         // document.getElementById('authorize_button').innerText = 'Refresh';
-        await this.#listAlbums.bind(this)();
+        GoogleAuthService.authorized = true;
+        console.log('authorize complete');
+        window.dispatchEvent(new CustomEvent('google-authenticated'));
+        // TODO: Force state update?
     }
 
     /**
@@ -112,11 +112,11 @@ export default class GooglePhotosAuthButton extends Component {
         if (window.gapi.client.getToken() === null) {
             // Prompt the user to select a Google Account and ask for consent to share their data
             // when establishing a new session.
-            this.tokenClient.requestAccessToken({ prompt: 'consent' });
+            this.#tokenClient.requestAccessToken({ prompt: 'consent' });
             // tokenClient.requestAccessToken();
         } else {
             // Skip display of account chooser and consent dialog for an existing session.
-            this.tokenClient.requestAccessToken({ prompt: '' });
+            this.#tokenClient.requestAccessToken({ prompt: '' });
         }
     }
 
@@ -132,35 +132,5 @@ export default class GooglePhotosAuthButton extends Component {
             document.getElementById('authorize_button').innerText = 'Authorize';
             document.getElementById('signout_button').style.visibility = 'hidden';
         }
-    }
-
-    // documentation:
-    // https://developers.google.com/photos/library/reference/rest/v1/albums#Album
-
-    /**
-     * Print metadata for first 10 Albums.
-     */
-    async #listAlbums() {
-        let response;
-        try {
-            response = await window.gapi.client.photoslibrary.albums.list({
-                'pageSize': 10,
-                'fields': 'albums(id,title,coverPhotoBaseUrl)',
-            });
-        } catch (err) {
-            console.error(err);
-            document.getElementById('albums').innerText = err.message;
-            return;
-        }
-        const albums = response.result.albums;
-        if (!albums || albums.length == 0) {
-            document.getElementById('albums').innerText = 'No albums found.';
-            return;
-        }
-        // Flatten to string to display
-        const output = albums.reduce(
-            (str, album) => `${str}${album.title} (${album.coverPhotoBaseUrl}\n`,
-            'albums:\n');
-        document.getElementById('albums').innerText = output;
     }
 }

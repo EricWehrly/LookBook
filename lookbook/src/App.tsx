@@ -1,6 +1,7 @@
 import './App.css';
 import { default as Look } from './components/looks/look';
 import { GetLooks } from './components/looks/looks';
+import {default as GooglePhotosAuthButton } from './components/photos/authorize.mjs';
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
 
   return (
     <div className="App">
+      <GooglePhotosAuthButton />
       <Look id={lookId || ''} />
     </div>
   );
