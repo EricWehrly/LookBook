@@ -5,7 +5,7 @@ import LookModel from './lookModel';
 import { GetLook } from './looks';
 import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
-import AlbumPicker from '../photos/albumpicker.mjs';
+import AlbumPicker from '../photos/albumpicker';
 
 interface LookState {
     name? : string,
@@ -57,6 +57,7 @@ export default class Look extends Component<LookModel> implements LookModel {
             <h3>Photos:</h3>
             <AlbumPicker />
             <div className="photo">+</div>
+            <input type="file" id="input" multiple />
         </div>
     }
 
