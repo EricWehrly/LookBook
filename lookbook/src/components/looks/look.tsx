@@ -6,6 +6,7 @@ import { GetLook } from './looks';
 import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
+import GooglePhotosAuthButton from '../photos/authorize.mjs';
 
 interface LookState {
     name? : string,
@@ -63,6 +64,7 @@ export default class Look extends Component<LookModel> implements LookModel {
             <Tags parentTypeName='look' parentId={this._id} />
             <h3 title={this.currentInstance?.photos?.length?.toString()}>Photos:</h3>
             {photoContent}
+            <GooglePhotosAuthButton />
         </div>
     }
 
