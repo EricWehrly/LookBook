@@ -1,28 +1,22 @@
 import { Component, ReactNode } from "react";
 
-interface MenuItem {
+export interface MenuItem {
     text: string,
     route: string
 }
 
-class Menu extends Component {
+export interface MenuProps {
+    items: MenuItem[]
+}
+
+export default class Menu extends Component<MenuProps> {
 
     private items: MenuItem[] = [];
 
-    constructor(props: Object) {
+    constructor(props: MenuProps) {
         super(props);
 
-        const todayLook: MenuItem = {
-            text: "Today's Look",
-            route: "/today"
-        };
-        this.items.push(todayLook);
-
-        const demo: MenuItem = {
-            text: "Barcode",
-            route: "/quagga"
-        };
-        this.items.push(demo);
+        this.items = props.items;
     }
 
     handleClick(route: string) {
@@ -40,5 +34,3 @@ class Menu extends Component {
         );
     }
 }
-
-export default Menu;

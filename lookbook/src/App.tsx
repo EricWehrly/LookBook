@@ -5,9 +5,23 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import CurrentLook from './components/looks/currentLook';
-import Menu from './components/menu/menu';
+import Menu, { MenuItem } from './components/menu/menu';
 
 function App() {
+
+  const menuItems: MenuItem[] = [];
+
+  const todayLook: MenuItem = {
+      text: "Today's Look",
+      route: "/today"
+  };
+  menuItems.push(todayLook);
+
+  const demo: MenuItem = {
+      text: "Barcode",
+      route: "/quagga"
+  };
+  menuItems.push(demo);
 
   const router = createBrowserRouter([
     {
@@ -22,7 +36,7 @@ function App() {
   
   return (
     <div className="App">
-      <Menu />
+      <Menu items={menuItems} />
     <RouterProvider router={router} />
     </div>
   );
