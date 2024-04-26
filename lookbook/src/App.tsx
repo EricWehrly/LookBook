@@ -11,33 +11,32 @@ function App() {
 
   const menuItems: MenuItem[] = [];
 
-  const todayLook: MenuItem = {
-      text: "Today's Look",
-      route: "/today"
+  const todayLook = {
+    text: "Today's Look",
+    path: "/today",
+    element: <CurrentLook />,
   };
   menuItems.push(todayLook);
 
-  const demo: MenuItem = {
-      text: "Barcode",
-      route: "/quagga"
+  const demo = {
+    text: "Barcode",
+    path: "/quagga",
+    element: <Demo />,
   };
   menuItems.push(demo);
 
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <CurrentLook />,
+      element: <CurrentLook />
     },
-    {
-      path: "/quagga",
-      element: <Demo />,
-    },
+    ...menuItems
   ]);
-  
+
   return (
     <div className="App">
       <Menu items={menuItems} />
-    <RouterProvider router={router} />
+      <RouterProvider router={router} />
     </div>
   );
 }

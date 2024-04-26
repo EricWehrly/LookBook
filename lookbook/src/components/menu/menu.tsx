@@ -2,7 +2,7 @@ import { Component, ReactNode } from "react";
 
 export interface MenuItem {
     text: string,
-    route: string
+    path: string
 }
 
 export interface MenuProps {
@@ -28,7 +28,7 @@ export default class Menu extends Component<MenuProps> {
         return (
             <ul className="menu">
             {this.items.map(item => (
-                <li key={item.route} onClick={this.handleClick.bind(this, item.route)}>{item.text}</li>
+                <li key={item.path} onClick={this.handleClick.bind(this, item.path)}>{item.text}</li>
             ))}
             </ul>
         );
