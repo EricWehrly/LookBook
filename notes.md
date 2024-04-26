@@ -1,3 +1,8 @@
+store large files in indexdb?
+    yarn add localforage
+    https://reactrouter.com/en/main/start/tutorial
+        tutorial uses localforage which suggests storing in indexdb which on iOS stores at least 1GB
+
 TODO ?
 https://github.com/mbborromeo/google-photos-viewer
 
