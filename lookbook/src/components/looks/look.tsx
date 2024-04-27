@@ -1,4 +1,4 @@
-import { ChangeEvent, Component, useState } from 'react';
+import { Component } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 import LookModel from './lookModel';
@@ -7,6 +7,7 @@ import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
 import GooglePhotosAuthButton from '../photos/authorize.mjs';
+import util from '../../util/util';
 
 interface LookState {
     name? : string,
@@ -47,8 +48,6 @@ export default class Look extends Component<LookModel> implements LookModel {
     get storageKey() {
         return `${this._id}`;
     }
-    // <h2>{this.name}</h2>
-    // <h2 contentEditable="true" onInput={this.h2Edited.bind(this)}>{this.name || "Today's Look"}</h2>
 
     render() {
         const photoContent = this.listPhotos();
@@ -81,7 +80,7 @@ export default class Look extends Component<LookModel> implements LookModel {
         );
 
         return <>
-            <AlbumPicker  />
+            <AlbumPicker />
             {photos}
             <div className="photo">+</div>
         </>
@@ -113,7 +112,7 @@ export default class Look extends Component<LookModel> implements LookModel {
 
             Look.Looks[this._id] = this;
         } else {
-            this._id = crypto.randomUUID();
+            this._id = util.getUUID();
 
             if(options.name) {
                 this.name = options.name;
