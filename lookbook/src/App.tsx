@@ -2,7 +2,7 @@ import './App.css';
 import Demo from './components/barcodes/demo';
 import {
   createBrowserRouter,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
 import CurrentLook from './components/looks/currentLook';
 import Menu, { MenuItem } from './components/menu/menu';
@@ -35,7 +35,7 @@ function App() {
 
   return (
     <div className="App">
-      <Menu items={menuItems} />
+      <Menu items={menuItems} router={router} />
       <RouterProvider router={router} />
     </div>
   );

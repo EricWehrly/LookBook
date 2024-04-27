@@ -1,4 +1,5 @@
 import { Component, ReactNode } from "react";
+import { NavigateFunction } from "react-router-dom";
 
 export interface MenuItem {
     text: string,
@@ -6,21 +7,25 @@ export interface MenuItem {
 }
 
 export interface MenuProps {
-    items: MenuItem[]
+    items: MenuItem[],
+    navigator?: NavigateFunction,
+    router: any
 }
 
 export default class Menu extends Component<MenuProps> {
 
     private items: MenuItem[] = [];
+    private navigate;
 
     constructor(props: MenuProps) {
         super(props);
 
         this.items = props.items;
+        this.navigate = props.router.navigate;
     }
 
-    handleClick(route: string) {
-        console.log("handleClick", route);
+    handleClick(event: React.MouseEvent<HTMLLIElement>, route: string) {
+        this.navigate(route);
     }
 
     render(): ReactNode {
@@ -28,7 +33,9 @@ export default class Menu extends Component<MenuProps> {
         return (
             <ul className="menu">
             {this.items.map(item => (
-                <li key={item.path} onClick={this.handleClick.bind(this, item.path)}>{item.text}</li>
+                <li key={item.path} onClick={(event) => this.handleClick(event, item.path)}>
+                {item.text}
+                </li>
             ))}
             </ul>
         );
