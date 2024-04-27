@@ -1,5 +1,6 @@
 import { Component, ReactNode } from "react";
 import { NavigateFunction } from "react-router-dom";
+import './menu.css';
 
 export interface MenuItem {
     text: string,
@@ -31,13 +32,16 @@ export default class Menu extends Component<MenuProps> {
     render(): ReactNode {
 
         return (
-            <ul className="menu">
-            {this.items.map(item => (
-                <li key={item.path} onClick={(event) => this.handleClick(event, item.path)}>
-                {item.text}
-                </li>
-            ))}
-            </ul>
+            <div className="menu-container">
+                <ul className="menu">
+                    {this.items.map(item => (
+                        <li className="menu-item" key={item.path}
+                            onClick={(event) => this.handleClick(event, item.path)}>
+                            {item.text}
+                        </li>
+                    ))}
+                </ul>
+            </div>
         );
     }
 }

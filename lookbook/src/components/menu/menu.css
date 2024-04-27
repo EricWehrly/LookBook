@@ -1,0 +1,13 @@
+.menu-container {
+    position: fixed;
+    left: 4px;
+    top: 4px;
+}
+
+.menu {
+    text-align: left;
+}
+
+.menu-item {
+    cursor: pointer;
+}
