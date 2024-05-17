@@ -1,5 +1,6 @@
 `docker build . -t lookbook`
-`$ docker run --rm -p 3000:3000 -it -v //f/FilePrograms/Dropbox/Projects/LookBook:/lookbook lookbook bash`
+`docker run --rm -p 3000:3000 -it -v $(pwd -W):/app lookbook bash`
+`cd build && aws s3 sync . s3://lookbook.wehrly.com`
 
 # Getting Started with Create React App
 
