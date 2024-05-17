@@ -1,4 +1,4 @@
-import { ChangeEvent, Component, useState } from 'react';
+import { ChangeEvent, Component } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 import LookModel from './lookModel';
@@ -10,7 +10,7 @@ import AlbumPicker from '../photos/albumpicker';
 interface LookState {
     name? : string,
     setText: { (value: React.SetStateAction<string>): void; }
-};
+}
 
 export default class Look extends Component<LookModel> implements LookModel {
 
@@ -162,7 +162,7 @@ export default class Look extends Component<LookModel> implements LookModel {
 
         const lookModel = GetLook(id);
         if(lookModel == null) {
-            throw 'bad';
+            throw Error('bad');
         }
 
         // TODO: somehow track "name" with state
@@ -170,10 +170,10 @@ export default class Look extends Component<LookModel> implements LookModel {
         if(!this.name) {
             this.name = this.nameFromDate(this.created);
         }
-        this.state = {
+        this.setState({
             name: lookModel.name,
             setText: this.state.setText
-        };
+        });
 
         if(lookModel.created) {
             this.created = lookModel.created;

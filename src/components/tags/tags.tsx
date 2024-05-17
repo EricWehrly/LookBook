@@ -9,7 +9,7 @@ interface TagProps {
 
 interface TagState {
     tags : string[]
-};
+}
 
 export default class Tags extends Component<TagProps, TagState> {
 

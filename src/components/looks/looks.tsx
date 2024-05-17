@@ -15,7 +15,7 @@ export function GetLooks(options : GetLooksOptions) : LookModel[] {
     const storageValue = localStorage.getItem('looks');
     const lookIds = storageValue ? JSON.parse(storageValue) : [];
 
-    for(var id of lookIds) {
+    for(const id of lookIds) {
         // console.log(id);
 
         const look = GetLook(id);
