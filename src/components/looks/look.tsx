@@ -111,30 +111,34 @@ export default class Look extends Component<LookModel> implements LookModel {
             Look.Looks[this._id] = this;
         } else {
             this._id = crypto.randomUUID();
-
-            if(options.name) {
-                this.name = options.name;
-            } else {
-                this.name = this.nameFromDate(new Date());
-            }
-            // TODO: somehow track "name" with state
-            this.state = {
-                name: this.name,
-                setText: this.state.setText
-            };
-            if(options.created) this.created = options.created;
-            else this.created = new Date()
-
-            Look.Looks[this._id] = this;
-            // TODO: We need a generic persistence interface layer that can implement localStorage vs alternates
-            localStorage.setItem('looks', JSON.stringify(Object.keys(Look.Looks)));
-    
-            this.save();
+            this.defaultLook(options);
         }
 
         // TODO: fix later ...
         this.instances.push(new LookInstance(this));
         this.currentInstance = this.instances[0];
+    }
+
+    private defaultLook(options: LookModel) {
+
+        if (options.name) {
+            this.name = options.name;
+        } else {
+            this.name = this.nameFromDate(new Date());
+        }
+        // TODO: somehow track "name" with state
+        this.state = {
+            name: this.name,
+            setText: this.state.setText
+        };
+        if (options.created) this.created = options.created;
+        else this.created = new Date();
+
+        Look.Looks[this._id] = this;
+        // TODO: We need a generic persistence interface layer that can implement localStorage vs alternates
+        localStorage.setItem('looks', JSON.stringify(Object.keys(Look.Looks)));
+
+        this.save();
     }
 
     private buildFromStorage(id : string) {
