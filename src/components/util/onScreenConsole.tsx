@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './onScreenConsole.css';
 
-let enabled = true; // Global enabled flag
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const enabled = isMobile; // Global enabled flag
 
 const OnScreenConsole = () => {
   const [logs, setLogs] = useState<string[]>([]);
