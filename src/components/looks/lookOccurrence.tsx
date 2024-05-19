@@ -1,5 +1,6 @@
 import { Component } from "react";
 import Look from "./look";
+import './lookOccurrence.css';
 
 // TODO: Maybe we want these controllable some other way?
 const photoWidth = 240;
@@ -80,7 +81,6 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
             style={{
                 width: `${photoWidth}px`,
                 height: `${photoHeight}px`,
-                margin: '4px',
                 backgroundImage: `url('${photo.src}=w${photoWidth}-h${photoHeight}')`
             }}>
             </div>
