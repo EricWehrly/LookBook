@@ -1,6 +1,10 @@
 import { Component } from "react";
 import Look from "./look";
 
+// TODO: Maybe we want these controllable some other way?
+const photoWidth = 240;
+const photoHeight = 240;
+
 interface LookOccurrenceProps {
     look: Look;
   }
@@ -59,9 +63,9 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
         const photos = localStorage.getItem(this.photosStorageKey);
         if(photos) {
             const parsed = JSON.parse(photos);
-            this.setState({
+            this.state = {
                 photos: parsed
-            });
+            };
         }
 
         if(!LookOccurrence.current) {
@@ -71,21 +75,20 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
 
     render() {
         
-
         const photos = this.state.photos.map(photo => 
             <div key={photo.id} className="photo" 
             style={{
-                width: '240px',
-                height: '240px',
-                backgroundImage: `url('${photo.src}=w240-h240')`
+                width: `${photoWidth}px`,
+                height: `${photoHeight}px`,
+                margin: '4px',
+                backgroundImage: `url('${photo.src}=w${photoWidth}-h${photoHeight}')`
             }}>
             </div>
         );
 
-        return <>
-            and here are your photos:
+        return <div className="lookOccurrence">
             {photos}
-        </>
+        </div>
     }
 }
 
