@@ -1,4 +1,4 @@
-import { ChangeEvent, Component } from 'react';
+import { Component } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
 import LookModel from './lookModel';
@@ -6,6 +6,7 @@ import { GetLook } from './looks';
 import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
+import { LookOccurrence } from './lookOccurrence';
 
 interface LookState {
     name? : string,
@@ -26,8 +27,7 @@ export default class Look extends Component<LookModel> implements LookModel {
 
     // TODO: (big lift) Move 'created' to instance ...
     created!: Date; // TODO: the exclamation asserts it's "definitely" getting assigned in constructor...
-    instances : LookInstance[] = [];
-    private currentInstance? : LookInstance;
+    instances : LookOccurrence[] = [];
 
     state : LookState = {
         name: '',
@@ -50,7 +50,6 @@ export default class Look extends Component<LookModel> implements LookModel {
     // <h2 contentEditable="true" onInput={this.h2Edited.bind(this)}>{this.name || "Today's Look"}</h2>
 
     render() {
-        const photoContent = this.listPhotos();
         // TODO: Name should be the selected date if null ... today if date is today
         return <div className="look">
           <EditText
@@ -61,27 +60,10 @@ export default class Look extends Component<LookModel> implements LookModel {
             onSave={this.handleSave.bind(this)}
           />
             <Tags parentTypeName='look' parentId={this._id} />
-            <h3 title={this.currentInstance?.photos?.length?.toString()}>Photos:</h3>
-            {photoContent}
-        </div>
-    }
-
-    private listPhotos() {
-
-        const photos = this.currentInstance?.photos.map(photo => 
-            <div key={photo.id} className="photo" 
-            style={{
-                width: '240px',
-                height: '240px',
-                backgroundImage: `url('${photo.src}=w240-h240')`
-            }}>
-            </div>
-        );
-
-        return <>
+            <h3 title={LookOccurrence.Current?.photos?.length?.toString()}>Photos:</h3>            
             <AlbumPicker  />
-            {photos}
-        </>
+            <LookOccurrence look={this} />
+        </div>
     }
 
     handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setFn: { (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (value: React.SetStateAction<string>): void; (arg0: any): void; }) => {
@@ -90,11 +72,6 @@ export default class Look extends Component<LookModel> implements LookModel {
 
     handleSave(props: onSaveProps) {
         this.save();
-    }
-
-    addPhoto(photo: Photo) {
-
-        this.currentInstance?.addPhoto(photo);
     }
 
     constructor(options: LookModel) {
@@ -113,10 +90,6 @@ export default class Look extends Component<LookModel> implements LookModel {
             this._id = crypto.randomUUID();
             this.defaultLook(options);
         }
-
-        // TODO: fix later ...
-        this.instances.push(new LookInstance(this));
-        this.currentInstance = this.instances[0];
     }
 
     private defaultLook(options: LookModel) {
@@ -181,53 +154,5 @@ export default class Look extends Component<LookModel> implements LookModel {
         const name = "Today's Look";
 
         return name;
-    }
-}
-
-export class LookInstance {
-
-    look: Look;
-    photos : Photo[] = [];
-
-    // TODO: 'created' should ONLY live in instance
-    get created() {
-        return this.look.created;
-    }
-
-    private get storageKey() {
-        return `${this.look.storageKey}.${this.look.created}`;
-    }
-
-    private get photosStorageKey() {
-        return `${this.storageKey}.photos`;
-    }
-
-    addPhoto(options: Photo) {
-
-        this.photos.push(new Photo(options));
-        localStorage.setItem(this.photosStorageKey, JSON.stringify(this.photos));
-        console.log('hey eric check!');
-    }
-
-    constructor(look: Look) {
-        this.look = look;
-
-        const photos = localStorage.getItem(this.photosStorageKey);
-        if(photos) {
-            const parsed = JSON.parse(photos);
-            this.photos = parsed;
-        }
-    }
-}
-
-export class Photo {
-
-    id?: string;
-    src: string;
-
-    constructor(options: Photo) {
-
-        this.src = options.src;
-        this.id = options.id;
     }
 }

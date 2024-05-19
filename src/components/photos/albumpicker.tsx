@@ -3,6 +3,7 @@ import { default as GoogleAuthService } from './googleAuthService.mjs';
 import GooglePhotosService from "./googlePhotoService.mjs";
 import './albumpicker.css';
 import Look from "../looks/look";
+import { LookOccurrence } from "../looks/lookOccurrence";
 
 interface GooglePhotoAlbum {
     id: string,
@@ -110,7 +111,7 @@ export default class AlbumPicker extends Component {
         const photos = this.state.photos.filter(photo => photo.id == id);
         console.log(photos);
         photos[0].selected = !photos[0].selected;
-        Look.Current.addPhoto({
+        LookOccurrence.Current.addPhoto({
             id: photos[0].id,
             src: photos[0].baseUrl
         });
