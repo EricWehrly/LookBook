@@ -149,10 +149,10 @@ export default class Look extends Component<LookModel> implements LookModel {
         if(!this.name) {
             this.name = this.nameFromDate(this.created);
         }
-        this.setState({
+        this.state = {
             name: lookModel.name,
             setText: this.state.setText
-        });
+        };
 
         if(lookModel.created) {
             this.created = lookModel.created;
