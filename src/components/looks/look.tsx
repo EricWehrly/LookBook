@@ -7,6 +7,7 @@ import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
 import { LookOccurrence } from './lookOccurrence';
+import { Products } from './products';
 
 interface LookState {
     name? : string,
@@ -62,7 +63,9 @@ export default class Look extends Component<LookModel> implements LookModel {
             <Tags parentTypeName='look' parentId={this._id} />
             <h3 title={LookOccurrence.Current?.photos?.length?.toString()}>Photos:</h3>            
             <AlbumPicker  />
-            <LookOccurrence look={this} />
+            <LookOccurrence look={this} />            
+            <h3>Products:</h3>
+            <Products look={this} />
         </div>
     }
 
