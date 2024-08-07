@@ -19,9 +19,9 @@ const Result: React.FC<ResultProps> = ({ result }) => {
       <li>
         Unrecognized: {resolvedResult.barcode} (lookup failed)
         <br />
-        <button>Try again</button>
+        <button disabled>Try again</button>
         <button>Enter manually</button>
-        <button>Request we do it for you</button>
+        <button disabled>Request we do it for you</button>
       </li>
     );
   }
