@@ -7,7 +7,7 @@ import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
 import { LookOccurrence } from './lookOccurrence';
-import { Products } from './products';
+import Products from './products';
 
 interface LookState {
     name? : string,

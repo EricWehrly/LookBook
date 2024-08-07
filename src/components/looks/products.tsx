@@ -1,7 +1,7 @@
-import { Component } from "react";
 import Look from "./look";
 import ProductModel from "./productModel";
-import QuaggaImpl from "../barcode/QuaggaImpl";
+import { useNavigate } from 'react-router-dom';
+import React from "react";
 
 interface ProductsProps {
     look: Look;
@@ -9,41 +9,35 @@ interface ProductsProps {
 
 interface ProductsState {
     products: ProductModel[];
-    showScanner: boolean;
 }
 
-export class Products extends Component<ProductsProps, ProductsState> {
+// Convert Products to a functional component to use hooks
+function Products({ look }: ProductsProps) {
+    const [products, setProducts] = React.useState<ProductModel[]>([]);
+    const navigate = useNavigate(); // Use the useNavigate hook
 
-    constructor(props: ProductsProps) {
-        super(props);
-        
-        this.state = {
-            products: [],
-            showScanner: true
-        };
-    }
-
-    toggleNewComponent = () => {
-        this.setState(prevState => ({ showScanner: !prevState.showScanner }));
+    const navigateToNewProduct = () => {
+        navigate('/product');
     };
 
-    render() {
-        const products = this.state.products.map(product =>
-            <div key={product.id} className="product"
-                style={{
-                    // width: `${photoWidth}px`,
-                    // height: `${photoHeight}px`,
-                    // backgroundImage: `url('${product.src}=w${photoWidth}-h${photoHeight}')`
-                }}>{product.name}
-                <br />
-                {product.barcode}
-            </div>
-        );
-
-        return <div className="products">
-            {products}
-            <button onClick={this.toggleNewComponent}>Scan a new product</button>
-            {this.state.showScanner && <QuaggaImpl />}
+    const productsElements = products.map(product =>
+        <div key={product.id} className="product"
+            style={{
+                // width: `${photoWidth}px`,
+                // height: `${photoHeight}px`,
+                // backgroundImage: `url('${product.src}=w${photoWidth}-h${photoHeight}')`
+            }}>{product.name}
+            <br />
+            {product.barcode}
         </div>
-    }
+    );
+
+    return (
+        <div>
+            {productsElements}
+            <button onClick={navigateToNewProduct}>Add new product</button>
+        </div>
+    );
 }
+
+export default Products;
