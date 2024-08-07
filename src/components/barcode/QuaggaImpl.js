@@ -61,6 +61,13 @@ const QuaggaImpl = () => {
         }
     }, [torchOn, setTorch]);
 
+    const handleDetected = (result) => {
+        const isDuplicate = results.some(existingResult => existingResult.code === result.code);
+        if (!isDuplicate) {
+            setResults([...results, result]);
+        }
+    };
+
     return (
         <div>
             {cameraError ? <p>ERROR INITIALIZING CAMERA ${JSON.stringify(cameraError)} -- DO YOU HAVE PERMISSION?</p> : null}
@@ -91,7 +98,7 @@ const QuaggaImpl = () => {
                     // width: '100%',
                     border: '3px solid green',
                 }} width="640" height="480" />
-                {scanning ? <Scanner scannerRef={scannerRef} cameraId={cameraId} onDetected={(result) => setResults([...results, result])} /> : null}
+                {scanning ? <Scanner scannerRef={scannerRef} cameraId={cameraId} onDetected={handleDetected} /> : null}
             </div>
         </div>
     );
