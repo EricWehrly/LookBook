@@ -43,6 +43,11 @@ const QuaggaImpl = () => {
         .then((cameras) => setCameras(cameras))
         .then(() => Quagga.CameraAccess.disableTorch()) // disable torch at start, in case it was enabled before and we hot-reloaded
         .catch((err) => setCameraError(err));
+
+        // add a previously resolved value so that we can test
+        // without needing to fuss with lining up the camera (every time...)
+        results.push({ code: '0030878461993', format: 'ean_13' });
+
         return () => disableCamera();
     }, []);
 
