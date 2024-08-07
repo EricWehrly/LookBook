@@ -13,11 +13,12 @@ export function productLookup(code: number, format: string): ResolvedProduct {
 }
 
 export function resolveFromAmazonUrl(url: string): ResolvedProduct | null {
-    /*
-    axios.get(url).then(response => {
-        console.log(response);
-    });
-    */
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+
     return null;
 }
 
