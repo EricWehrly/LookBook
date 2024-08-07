@@ -8,6 +8,7 @@ import 'react-edit-text/dist/index.css';
 import AlbumPicker from '../photos/albumpicker';
 import { LookOccurrence } from './lookOccurrence';
 import Products from './products';
+import GooglePhotosAuthButton from '../photos/authorize.mjs';
 
 interface LookState {
     name? : string,
@@ -52,20 +53,23 @@ export default class Look extends Component<LookModel> implements LookModel {
 
     render() {
         // TODO: Name should be the selected date if null ... today if date is today
-        return <div className="look">
-          <EditText
-            name='textbox'
-            className='look-title'
-            value={this.name}
-            onChange={(e) => this.handleChange(e, this.state.setText)}
-            onSave={this.handleSave.bind(this)}
-          />
-            <Tags parentTypeName='look' parentId={this._id} />
-            <h3 title={LookOccurrence.Current?.photos?.length?.toString()}>Photos:</h3>            
-            <AlbumPicker  />
-            <LookOccurrence look={this} />            
-            <h3>Products:</h3>
-            <Products look={this} />
+        return <div>
+            <GooglePhotosAuthButton />
+            <div className="look">
+            <EditText
+                name='textbox'
+                className='look-title'
+                value={this.name}
+                onChange={(e) => this.handleChange(e, this.state.setText)}
+                onSave={this.handleSave.bind(this)}
+            />
+                <Tags parentTypeName='look' parentId={this._id} />
+                <h3 title={LookOccurrence.Current?.photos?.length?.toString()}>Photos:</h3>            
+                <AlbumPicker  />
+                <LookOccurrence look={this} />            
+                <h3>Products:</h3>
+                <Products look={this} />
+            </div>
         </div>
     }
 

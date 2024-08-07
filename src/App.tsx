@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Look from './components/looks/look';
 import { GetLooks } from './components/looks/looks';
 import { ProductScanner } from './components/looks/productScanner';
-import GooglePhotosAuthButton from './components/photos/authorize.mjs';
 import OnScreenConsole from './components/util/onScreenConsole';
 
 function App() {
@@ -19,7 +18,6 @@ function App() {
   return (
     <div className="App">
       <OnScreenConsole />
-      <GooglePhotosAuthButton />
       <Router>
         <Routes>
           <Route path="/" element={<Look id={lookId || ''} />} />
