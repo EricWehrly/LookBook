@@ -1,4 +1,4 @@
-import Look from "./look";
+import Look from "../looks/look";
 import ProductModel from "./productModel";
 import { useNavigate } from 'react-router-dom';
 import React from "react";

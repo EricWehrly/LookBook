@@ -2,7 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Look from './components/looks/look';
 import { GetLooks } from './components/looks/looks';
-import { ProductScanner } from './components/looks/productScanner';
+import { ProductScanner } from './components/products/productScanner';
 import OnScreenConsole from './components/util/onScreenConsole';
 
 function App() {
