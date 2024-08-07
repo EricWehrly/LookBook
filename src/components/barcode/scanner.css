@@ -6,3 +6,10 @@
     position: absolute;
     top: 0px;
 }
+
+ul.results {
+    display: inline-block; /* Makes the ul only as wide as its longest li */
+    padding: 0; /* Adjust padding as needed */
+    margin: 0; /* Adjust margin as needed */
+    margin-bottom: 1em;
+}
