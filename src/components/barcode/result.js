@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 // https://github.com/ericblade/quagga2-react-example
 const Result = ({ result }) => (
     <li>
-        {result.codeResult.code} [{result.codeResult.format}]
+        {result.code} [{result.format}]
     </li>
 );
 

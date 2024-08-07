@@ -1,3 +1,4 @@
+import './scanner.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Quagga from '@ericblade/quagga2';
 import Scanner from './scanner';
@@ -49,10 +50,14 @@ const QuaggaImpl = () => {
     const onTorchClick = useCallback(() => {
         const torch = !torchOn;
         setTorch(torch);
-        if (torch) {
-            Quagga.CameraAccess.enableTorch();
-        } else {
-            Quagga.CameraAccess.disableTorch();
+        try {
+            if (torch) {
+                Quagga.CameraAccess.enableTorch();
+            } else {
+                Quagga.CameraAccess.disableTorch();
+            }
+        } catch (err) {
+            console.error(err);
         }
     }, [torchOn, setTorch]);
 
@@ -72,14 +77,15 @@ const QuaggaImpl = () => {
             }
             <button onClick={onTorchClick}>{torchOn ? 'Disable Torch' : 'Enable Torch'}</button>
             <button onClick={() => setScanning(!scanning) }>{scanning ? 'Stop' : 'Start'}</button>
+            <h3>Results:</h3>
             <ul className="results">
-                {results.map((result) => (result.codeResult && <Result key={result.codeResult.code} result={result} />))}
+                {results.length === 0 ? <span>None so far...</span> : null}
+                {results.map((result) => (<Result key={result.code} result={result} />))}
             </ul>
-            <div ref={scannerRef} style={{position: 'relative', border: '3px solid red'}}>
+            
+            <div ref={scannerRef} className="scannerRef">
                 {/* <video style={{ width: window.innerWidth, height: 480, border: '3px solid orange' }}/> */}
                 <canvas className="drawingBuffer" style={{
-                    position: 'absolute',
-                    top: '0px',
                     // left: '0px',
                     // height: '100%',
                     // width: '100%',

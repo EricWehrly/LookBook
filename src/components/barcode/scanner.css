@@ -1,0 +1,8 @@
+.scannerRef {
+    position: relative;
+}
+
+.drawingBuffer {
+    position: absolute;
+    top: 0px;
+}
