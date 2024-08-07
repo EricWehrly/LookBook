@@ -1,8 +1,10 @@
 import './App.css';
-import { default as Look } from './components/looks/look';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Look from './components/looks/look';
 import { GetLooks } from './components/looks/looks';
+import { ProductScanner } from './components/looks/productScanner';
+import GooglePhotosAuthButton from './components/photos/authorize.mjs';
 import OnScreenConsole from './components/util/onScreenConsole';
-import {default as GooglePhotosAuthButton } from './components/photos/authorize.mjs';
 
 function App() {
 
@@ -12,11 +14,19 @@ function App() {
   const lookId = looks.length > 0 ? looks[0].id : undefined;
   console.log(looks);
 
+  // TODO: Move GooglePhotosAuthButton into look, or into photo places
+  // but it also needs to be some kind of singleton?
   return (
     <div className="App">
       <OnScreenConsole />
       <GooglePhotosAuthButton />
-      <Look id={lookId || ''} />
+      <Router>
+        <Routes>
+          <Route path="/" element={<Look id={lookId || ''} />} />
+          <Route path="/product" element={<ProductScanner />} />
+          <Route path="/looks/:id" element={<Look />} />
+        </Routes>
+      </Router>
     </div>
   );
 }
