@@ -2,7 +2,7 @@ import './scanner.css';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Quagga from '@ericblade/quagga2';
 import Scanner from './scanner';
-import Result from './result';
+import Result from './product';
 
 // (for now, this is a straight rip from )
 // https://github.com/ericblade/quagga2-react-example
