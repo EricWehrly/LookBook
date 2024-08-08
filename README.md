@@ -3,7 +3,8 @@
 `cd build && aws s3 sync . s3://lookbook.wehrly.com`
 
 To locally start the lambda
-    (it's only used to resolve products)
+    (it's only used to resolve products, the app will run without it)
+    (needs to have aws sam installed, and seems to only work in powershell on windows, at least by default)
 `cd server && sam local start-api -p 5000`
 
 also we may need this
