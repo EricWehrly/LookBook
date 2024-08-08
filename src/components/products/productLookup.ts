@@ -21,18 +21,11 @@ async function upcItemDb(upc: string): Promise<ResolvedProduct | null> {
     if (!upc) return null;
 
     try {
-        const response = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${upc}`);
+        const response = await fetch(`http://localhost:5000/upc?upc=${upc}`);
         const data = await response.json();
-        console.log(data);
-        const item = data.items[0];
-        return {
-            name: item.title,
-            barcode: upc,
-            src: item.offers[0].link,
-            previewImageUrl: item.images[0]
-        };
+        return data;
     } catch (error) {
-        console.error('Error:', error);
+        console.error(error);
         return null;
     }
 }

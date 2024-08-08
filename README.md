@@ -4,7 +4,10 @@
 
 To locally start the lambda
     (it's only used to resolve products)
-`cd server && sam local start-api`
+`cd server && sam local start-api -p 5000`
+
+also we may need this
+https://www.upcitemdb.com/wp/docs/main/development/getting-started/
 
 # Getting Started with Create React App
 
