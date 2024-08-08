@@ -26,3 +26,4 @@ yarn-error.log*
 infrastructure/.terraform
 .terraform.lock*
 tfplan
+infrastructure/*.zip
