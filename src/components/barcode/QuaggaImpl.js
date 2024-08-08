@@ -46,7 +46,7 @@ const QuaggaImpl = () => {
 
         // add a previously resolved value so that we can test
         // without needing to fuss with lining up the camera (every time...)
-        results.push({ code: '0030878461993', format: 'ean_13' });
+        setResults([{ code: '0030878461993', format: 'ean_13' }]);
 
         return () => disableCamera();
     }, []);
@@ -92,7 +92,7 @@ const QuaggaImpl = () => {
             <h3>Results:</h3>
             <ul className="results">
                 {results.length === 0 ? <span>None so far...</span> : null}
-                {results.map((result) => (<Result key={result.code} result={result} />))}
+                {results.map((result) => (<li key={result.code}><Result result={result} /></li>))}
             </ul>
             
             <div ref={scannerRef} className="scannerRef">

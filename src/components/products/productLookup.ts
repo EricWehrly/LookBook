@@ -1,11 +1,11 @@
 export interface ResolvedProduct {
     name: string;
-    barcode: number;
+    barcode: string;
     src?: string;
     previewImageUrl?: string;
 }
 
-export function productLookup(code: number, format: string): ResolvedProduct {
+export function productLookup(code: string, format: string): ResolvedProduct {
     return {
         name: "unrecognized",
         barcode: code
