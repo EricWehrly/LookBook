@@ -2,6 +2,10 @@
 `docker run --rm -p 3000:3000 -it -v $(pwd -W):/app lookbook bash`
 `cd build && aws s3 sync . s3://lookbook.wehrly.com`
 
+To locally start the lambda
+    (it's only used to resolve products)
+`cd server && sam local start-api`
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
