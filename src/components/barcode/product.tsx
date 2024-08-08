@@ -15,13 +15,17 @@ const Result: React.FC<ResultProps> = ({ result }) => {
   const [previewImageUrl, setPreviewImageUrl] = useState('');
 
   useEffect(() => {
-    const resolvedResult = productLookup(result.code, result.format);
-    if (resolvedResult) {
-      setBarcode(resolvedResult.barcode);
-      setName(resolvedResult.name || '');
-      setSrc(resolvedResult.src || '');
-      setPreviewImageUrl(resolvedResult.previewImageUrl || '');
-    }
+    const fetchProduct = async () => {
+      const resolvedResult = await productLookup(result.code, result.format);
+      if (resolvedResult) {
+        setBarcode(resolvedResult.barcode);
+        setName(resolvedResult.name || '');
+        setSrc(resolvedResult.src || '');
+        setPreviewImageUrl(resolvedResult.previewImageUrl || '');
+      }
+    };
+
+    fetchProduct();
   }, [result.code, result.format]);
 
   return (
