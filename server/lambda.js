@@ -15,6 +15,18 @@ exports.handler = async (event) => {
     try {
         const response = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${upc}`);
         const data = await response.json();
+
+        if(!data.items || data.items.length === 0) {
+            return {
+                statusCode: 404,
+                headers: { "Access-Control-Allow-Origin" : "*" },
+                body: JSON.stringify({
+                    message: "UPC lookup returned no items.",
+                    response
+                })
+            };
+        }
+
         // console.log(data);
         const item = data.items[0];
         return {
