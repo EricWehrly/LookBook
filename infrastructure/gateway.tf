@@ -1,33 +1,6 @@
 resource "aws_api_gateway_rest_api" "lookbook_api" {
-  name          = "lookbook_api"
+  name = "lookbook_api"
 }
-
-/*
-resource "aws_apigatewayv2_stage" "lambda" {
-  api_id = aws_api_gateway_rest_api.lookbook_api.id
-
-  name        = "serverless_lambda_stage"
-  auto_deploy = true
-
-  access_log_settings {
-    destination_arn = aws_cloudwatch_log_group.api_gw.arn
-
-    format = jsonencode({
-      requestId               = "$context.requestId"
-      sourceIp                = "$context.identity.sourceIp"
-      requestTime             = "$context.requestTime"
-      protocol                = "$context.protocol"
-      httpMethod              = "$context.httpMethod"
-      resourcePath            = "$context.resourcePath"
-      routeKey                = "$context.routeKey"
-      status                  = "$context.status"
-      responseLength          = "$context.responseLength"
-      integrationErrorMessage = "$context.integrationErrorMessage"
-      }
-    )
-  }
-}
-*/
 
 resource "aws_api_gateway_resource" "api_resource_upc" {
   rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
@@ -36,7 +9,7 @@ resource "aws_api_gateway_resource" "api_resource_upc" {
 }
 
 resource "aws_api_gateway_method" "api_method_upc" {
-  rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
+  rest_api_id   = aws_api_gateway_rest_api.lookbook_api.id
   resource_id   = aws_api_gateway_resource.api_resource_upc.id
   http_method   = "GET"
   authorization = "NONE"
@@ -66,5 +39,4 @@ resource "aws_lambda_permission" "api_gw" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "${aws_api_gateway_rest_api.lookbook_api.execution_arn}/*/*"
-    # source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.api.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.resource.path}"
 }
