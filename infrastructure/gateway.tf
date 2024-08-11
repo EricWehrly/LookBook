@@ -45,7 +45,7 @@ resource "aws_api_gateway_resource" "Folder" {
 resource "aws_api_gateway_resource" "s3_item" {
   rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
   parent_id   = aws_api_gateway_rest_api.lookbook_api.root_resource_id
-  path_part   = "{key}"
+  path_part   = "{proxy+}"
 }
 
 /* we probably don't want this 
@@ -79,7 +79,7 @@ resource "aws_api_gateway_method" "GetItem" {
   authorization = "NONE"
 
   request_parameters = {
-    "method.request.path.key" = true
+    "method.request.path.proxy" = true
   }
 }
 
@@ -92,13 +92,14 @@ resource "aws_api_gateway_integration" "S3Integration" {
   integration_http_method = "GET"
 
   type = "HTTP_PROXY"
+  passthrough_behavior    = "WHEN_NO_MATCH"
 
   # See uri description: https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/
-  uri = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/{key}"
+  uri = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/{proxy}"
   credentials = aws_iam_role.s3_api_gateway_role.arn
 
   request_parameters = {
-    "integration.request.path.key" = "method.request.path.key"
+    "integration.request.path.proxy" = "method.request.path.proxy"
   }
 }
 
