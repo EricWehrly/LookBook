@@ -95,18 +95,11 @@ resource "aws_api_gateway_integration" "S3Integration" {
 
   # See uri description: https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/
   uri = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/{key}"
-  # uri         = "arn:aws:apigateway:${var.aws_region}:s3:path//{folder}/{item}"
   credentials = aws_iam_role.s3_api_gateway_role.arn
 
-/*
   request_parameters = {
-    name =  "key"
-    "key" = "method.request.path.key"
+    "integration.request.path.key" = "method.request.path.key"
   }
-  request_templates = {                  # Not documented
-    "application/json" = "${file("api_gateway_body_mapping.template")}"
-  }
-  */
 }
 
 # Create S3 Full Access Policy
