@@ -10,6 +10,9 @@ To locally start the lambda
 also we may need this
 https://www.upcitemdb.com/wp/docs/main/development/getting-started/
 
+It's ugly but it might work @
+https://lookbook.wehrly.com/index.html
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
