@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS SAM template for deploying the lambda function.
+
+Globals:
+  Api:
+    # enable CORS; to make more specific, change the origin wildcard
+    # to a particular domain name, e.g. "'www.example.com'"
+    Cors: "'*'"
+
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod # local?
+      Cors:
+        AllowMethods: "'OPTIONS,GET'"
+        # AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Forwarded-For'"        
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+        # AllowOrigin: "'http://localhost:3000'"
+        MaxAge: "'600'"
+        AllowCredentials: false
+  MyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda.handler
+      Runtime: nodejs20.x
+      CodeUri: .
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /upc
+            Method: get
