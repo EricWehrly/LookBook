@@ -144,10 +144,39 @@ resource "aws_iam_role" "s3_api_gateway_role" {
 EOF
 }
 
-# Attach S3 Access Policy to the API Gateway Role
-resource "aws_iam_role_policy_attachment" "s3_policy_attach" {
+resource "aws_iam_role_policy_attachment" "gateway_s3_policy_attach" {
   role       = aws_iam_role.s3_api_gateway_role.name
   policy_arn = aws_iam_policy.s3_policy.arn
+}
+
+/*
+resource "aws_iam_policy" "cloudwatch_policy" {
+  name        = "api-gateway-cloudwatch-policy"
+  description = "Policy for allowing API Gateway to log to CloudWatch"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "gateway_cloudwatch_policy_attach" {
+  role       = aws_iam_role.s3_api_gateway_role.name
+  policy_arn = aws_iam_policy.cloudwatch_policy.arn
 }
 
 /*

@@ -6,7 +6,3 @@ terraform {
     }
   }
 }
-
-resource "aws_s3_bucket" "lookbook_bucket" {
-  bucket = "lookbook.wehrly.com"
-}
