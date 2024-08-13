@@ -9,6 +9,7 @@ import AlbumPicker from '../photos/albumpicker';
 import { LookOccurrence } from './lookOccurrence';
 import Products from '../products/products';
 import GooglePhotosAuthButton from '../photos/authorize.mjs';
+import { randomUUID } from 'crypto';
 
 interface LookState {
     name? : string,
@@ -94,7 +95,8 @@ export default class Look extends Component<LookModel> implements LookModel {
 
             Look.Looks[this._id] = this;
         } else {
-            this._id = crypto.randomUUID();
+            console.log('Trying to generate new look');
+            this._id = randomUUID();
             this.defaultLook(options);
         }
     }
