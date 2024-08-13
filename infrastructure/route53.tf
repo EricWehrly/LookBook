@@ -27,7 +27,13 @@ resource "aws_acm_certificate_validation" "wehrly_validation" {
 
 resource "aws_api_gateway_domain_name" "gateway_domain" {
   certificate_arn = aws_acm_certificate_validation.wehrly_validation.certificate_arn
-  domain_name     = "lookbook2.wehrly.com"
+  domain_name     = "lookbook.wehrly.com"
+}
+
+resource "aws_api_gateway_base_path_mapping" "lookbook_prod_mapping" {
+  api_id      = aws_api_gateway_rest_api.lookbook_api.id
+  stage_name = aws_api_gateway_deployment.S3APIDeployment.stage_name
+  domain_name = aws_api_gateway_domain_name.gateway_domain.domain_name
 }
 
 resource "aws_route53_record" "gateway_record" {
