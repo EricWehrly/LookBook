@@ -20,7 +20,8 @@ function App() {
       <OnScreenConsole />
       <Router>
         <Routes>
-          <Route path="/" element={<Look id={lookId || ''} />} />
+        <Route path="/index.html" element={<Look id={lookId || ''} />} />
+        <Route path="/" element={<Look id={lookId || ''} />} />
           <Route path="/product" element={<ProductScanner />} />
           <Route path="/looks/:id" element={<Look />} />
         </Routes>
