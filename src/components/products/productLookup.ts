@@ -1,3 +1,9 @@
+// if my domain name contains localhost, domain variable is "localhost:5000"
+// else use the domain in the window
+const domain = window.location.hostname.includes('localhost')
+    ? 'http://localhost:5000' 
+    : `https://${window.location.hostname}`;
+
 export interface ResolvedProduct {
     name: string;
     barcode: string;
@@ -21,7 +27,7 @@ async function upcItemDb(upc: string): Promise<ResolvedProduct | null> {
     if (!upc) return null;
 
     try {
-        const response = await fetch(`http://localhost:5000/upc?upc=${upc}`);
+        const response = await fetch(`${domain}/upc?upc=${upc}`);
         const data = await response.json();
         return data;
     } catch (error) {
