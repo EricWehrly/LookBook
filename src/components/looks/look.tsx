@@ -96,7 +96,7 @@ export default class Look extends Component<LookModel> implements LookModel {
             Look.Looks[this._id] = this;
         } else {
             console.log('Trying to generate new look');
-            this._id = randomUUID();
+            this._id = crypto.randomUUID();
             this.defaultLook(options);
         }
     }
