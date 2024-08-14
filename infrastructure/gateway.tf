@@ -123,7 +123,7 @@ resource "aws_api_gateway_integration" "index_integration" {
 
   # See uri description: https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/
   uri = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/index.html"
-  credentials = aws_iam_role.s3_api_gateway_role.arn
+  # credentials = aws_iam_role.s3_api_gateway_role.arn
 }
 
 # Create S3 Full Access Policy
