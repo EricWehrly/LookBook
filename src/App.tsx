@@ -4,6 +4,7 @@ import Look from './components/looks/look';
 import { GetLooks } from './components/looks/looks';
 import { ProductScanner } from './components/products/productScanner';
 import OnScreenConsole from './components/util/onScreenConsole';
+import PersistTest from './components/testComponent';
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/" element={<Look id={lookId || ''} />} />
           <Route path="/product" element={<ProductScanner />} />
           <Route path="/looks/:id" element={<Look />} />
+          <Route path="/persistenceTest" element={<PersistTest />} />
         </Routes>
       </Router>
     </div>
