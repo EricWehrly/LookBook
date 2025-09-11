@@ -1,4 +1,4 @@
-import { testUtils } from '../../../test-utils';
+import { testUtils } from '../../../../tests/test-utils';
 import { GetLook, GetLooks } from '../looks';
 import Look from '../look';
 import LookModel from '../lookModel';

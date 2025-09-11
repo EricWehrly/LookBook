@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, testUtils } from '../../../test-utils';
+import { render, screen, testUtils } from '../../../../tests/test-utils';
 import Look from '../look';
 import { GetLook, GetLooks } from '../looks';
 import LookModel from '../lookModel';
