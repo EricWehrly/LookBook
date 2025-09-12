@@ -1,7 +1,7 @@
 // test-utils.tsx - Custom test utilities for LookBook testing
 import React from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { clearLocalStorage } from './test-setup/localStorage';
+import { clearLocalStorage } from './setup/localStorage';
 
 // Custom render function that can be extended with providers as needed
 const customRender = (

@@ -1,8 +1,8 @@
 import React from 'react';
-import { render, screen, testUtils } from '../../../../tests/test-utils';
-import Look from '../../../components/looks/look';
-import { GetLook, GetLooks } from '../../../components/looks/looks';
-import LookModel from '../../../components/looks/lookModel';
+import { render, screen, testUtils } from '../test-utils';
+import Look from '../../components/looks/look';
+import { GetLook, GetLooks } from '../../components/looks/looks';
+import LookModel from '../../components/looks/lookModel';
 
 describe('Look Component', () => {
   beforeEach(() => {
