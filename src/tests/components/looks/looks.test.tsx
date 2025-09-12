@@ -1,7 +1,7 @@
 import { testUtils } from '../../../../tests/test-utils';
-import { GetLook, GetLooks } from '../looks';
-import Look from '../look';
-import LookModel from '../lookModel';
+import { GetLook, GetLooks } from '../../../components/looks/looks';
+import Look from '../../../components/looks/look';
+import LookModel from '../../../components/looks/lookModel';
 
 describe('Looks Utilities', () => {
   beforeEach(() => {
