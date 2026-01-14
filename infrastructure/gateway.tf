@@ -4,12 +4,44 @@ variable "aws_region" {
 
 resource "aws_api_gateway_rest_api" "lookbook_api" {
   name = "lookbook_api"
+
+  tags = local.common_tags
 }
 
 resource "aws_api_gateway_deployment" "S3APIDeployment" {
-  depends_on  = [aws_api_gateway_integration.S3Integration]
+  depends_on = [
+    aws_api_gateway_integration.S3Integration,
+    aws_api_gateway_integration.upc_lambda_integration,
+    aws_api_gateway_integration.index_integration,
+  ]
   rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
-  stage_name  = "lookbook_prod"
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.api_resource_upc.id,
+      aws_api_gateway_method.api_method_upc.id,
+      aws_api_gateway_integration.upc_lambda_integration.id,
+      aws_api_gateway_resource.s3_item.id,
+      aws_api_gateway_method.GetItem.id,
+      aws_api_gateway_integration.S3Integration.id,
+      aws_api_gateway_method.gateway_index_method.id,
+      aws_api_gateway_integration.index_integration.id,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "prod_lookbook" {
+  deployment_id = aws_api_gateway_deployment.S3APIDeployment.id
+  rest_api_id   = aws_api_gateway_rest_api.lookbook_api.id
+  stage_name    = "prod_lookbook"
+
+  xray_tracing_enabled = false
+
+  tags = local.common_tags
 }
 
 resource "aws_api_gateway_resource" "api_resource_upc" {
@@ -85,17 +117,17 @@ resource "aws_api_gateway_method" "GetItem" {
 
 resource "aws_api_gateway_integration" "S3Integration" {
   rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
-  resource_id   = aws_api_gateway_resource.s3_item.id
+  resource_id = aws_api_gateway_resource.s3_item.id
   http_method = aws_api_gateway_method.GetItem.http_method
 
   # Included because of this issue: https://github.com/hashicorp/terraform/issues/10501
   integration_http_method = "GET"
 
-  type = "HTTP_PROXY"
-  passthrough_behavior    = "WHEN_NO_MATCH"
+  type                 = "HTTP_PROXY"
+  passthrough_behavior = "WHEN_NO_MATCH"
 
   # See uri description: https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/
-  uri = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/{proxy}"
+  uri         = "http://lookbook.wehrly.com.s3-website-us-east-1.amazonaws.com/{proxy}"
   credentials = aws_iam_role.s3_api_gateway_role.arn
 
   request_parameters = {
@@ -112,14 +144,14 @@ resource "aws_api_gateway_method" "gateway_index_method" {
 
 resource "aws_api_gateway_integration" "index_integration" {
   rest_api_id = aws_api_gateway_rest_api.lookbook_api.id
-  resource_id   = aws_api_gateway_rest_api.lookbook_api.root_resource_id
+  resource_id = aws_api_gateway_rest_api.lookbook_api.root_resource_id
   http_method = aws_api_gateway_method.gateway_index_method.http_method
 
   # Included because of this issue: https://github.com/hashicorp/terraform/issues/10501
   integration_http_method = "GET"
 
-  type = "HTTP_PROXY"
-  passthrough_behavior    = "WHEN_NO_MATCH"
+  type                 = "HTTP_PROXY"
+  passthrough_behavior = "WHEN_NO_MATCH"
 
   # See uri description: https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/
   uri = "http://lookbook.wehrly.com/index.html"

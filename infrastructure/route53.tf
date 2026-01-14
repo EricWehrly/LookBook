@@ -1,10 +1,10 @@
 resource "aws_route53_zone" "main" {
-    name = "wehrly.com"
+  name = "wehrly.com"
 }
 
 resource "aws_acm_certificate" "wehrly_cert" {
-  domain_name               = "*.wehrly.com"
-  validation_method         = "DNS"
+  domain_name       = "*.wehrly.com"
+  validation_method = "DNS"
 }
 /*
 resource "aws_route53_record" "api_gateway_dns" {
@@ -21,7 +21,7 @@ resource "aws_route53_record" "api_gateway_dns" {
 */
 
 resource "aws_acm_certificate_validation" "wehrly_validation" {
-  certificate_arn         = aws_acm_certificate.wehrly_cert.arn
+  certificate_arn = aws_acm_certificate.wehrly_cert.arn
   # validation_record_fqdns = [for record in aws_route53_record.gateway_record : record.fqdn]
 }
 
@@ -32,7 +32,7 @@ resource "aws_api_gateway_domain_name" "gateway_domain" {
 
 resource "aws_api_gateway_base_path_mapping" "lookbook_prod_mapping" {
   api_id      = aws_api_gateway_rest_api.lookbook_api.id
-  stage_name = aws_api_gateway_deployment.S3APIDeployment.stage_name
+  stage_name  = aws_api_gateway_stage.prod_lookbook.stage_name
   domain_name = aws_api_gateway_domain_name.gateway_domain.domain_name
 }
 

@@ -1,5 +1,7 @@
 resource "aws_s3_bucket" "lookbook_bucket" {
   bucket = "lookbook.wehrly.com"
+
+  tags = local.common_tags
 }
 
 resource "aws_s3_bucket_website_configuration" "site_config" {
@@ -26,10 +28,10 @@ resource "aws_s3_bucket_policy" "site_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect = "Allow",
+        Effect    = "Allow",
         Principal = "*",
-        Action = "s3:GetObject",
-        Resource = "${aws_s3_bucket.lookbook_bucket.arn}/*"
+        Action    = "s3:GetObject",
+        Resource  = "${aws_s3_bucket.lookbook_bucket.arn}/*"
       }
     ]
   })

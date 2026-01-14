@@ -1,5 +1,3 @@
-
-
 data "archive_file" "lambda_upc" {
   type = "zip"
 
@@ -22,12 +20,14 @@ resource "aws_lambda_function" "upc_lookup" {
   s3_bucket = aws_s3_bucket.lookbook_bucket.id
   s3_key    = aws_s3_object.lambda_upc.key
 
-  runtime = "nodejs20.x"
+  runtime = "nodejs24.x"
   handler = "lambda.handler"
 
   source_code_hash = data.archive_file.lambda_upc.output_base64sha256
 
   role = aws_iam_role.lambda_exec.arn
+
+  tags = local.common_tags
 }
 
 /* hopefully we don't need cloudwatch
