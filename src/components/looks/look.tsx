@@ -5,11 +5,9 @@ import LookModel from './lookModel';
 import { GetLook } from './looks';
 import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
-import AlbumPicker from '../photos/albumpicker';
+import PhotoPicker from '../photos/photopicker';
 import { LookOccurrence } from './lookOccurrence';
 import Products from '../products/products';
-import GooglePhotosAuthButton from '../photos/authorize.mjs';
-import { randomUUID } from 'crypto';
 
 interface LookState {
     name? : string,
@@ -55,7 +53,6 @@ export default class Look extends Component<LookModel> implements LookModel {
     render() {
         // TODO: Name should be the selected date if null ... today if date is today
         return <div>
-            <GooglePhotosAuthButton />
             <div className="look">
             <EditText
                 name='textbox'
@@ -66,7 +63,7 @@ export default class Look extends Component<LookModel> implements LookModel {
             />
                 <Tags parentTypeName='look' parentId={this._id} />
                 <h3 title={LookOccurrence.Current?.photos?.length?.toString()}>Photos:</h3>            
-                <AlbumPicker  />
+                <PhotoPicker />
                 <LookOccurrence look={this} />            
                 <h3>Products:</h3>
                 <Products look={this} />
