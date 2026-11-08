@@ -1,5 +1,7 @@
 import React from 'react';
+import { waitFor } from '@testing-library/react';
 import { act, render, testUtils } from '../test-utils';
+import { MemoryPhotoStore, setPhotoStore } from '../../components/photos/photoStore';
 import Look from '../../components/looks/look';
 import { LookOccurrence, Photo } from '../../components/looks/lookOccurrence';
 
@@ -51,6 +53,21 @@ describe('LookOccurrence', () => {
       expect(container.querySelectorAll('.photo')).toHaveLength(1);
       expect(testUtils.getMockStorageData(`${look.id}.${look.created}.photos`))
         .toEqual([{ id: 'p1', src: 'http://img/1' }]);
+    });
+
+    test('renders photos with a stored: source from the photo store', async () => {
+      URL.createObjectURL = jest.fn(() => 'blob:x');
+      URL.revokeObjectURL = jest.fn();
+      const store = new MemoryPhotoStore();
+      await store.put('blob1', new Blob(['x']));
+      setPhotoStore(store);
+      const { ref, container } = mount(look);
+
+      act(() => { ref.current!.addPhoto(new Photo({ id: 'p1', src: 'stored:blob1' })); });
+
+      expect(container.querySelector('[data-photo-id="blob1"]')).toBeInTheDocument();
+      await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalled());
+      setPhotoStore(null);
     });
 
     test('addPhoto appends to existing photos', () => {

@@ -2,6 +2,10 @@ import { Component } from "react";
 import Look from "./look";
 import './lookOccurrence.css';
 import { readJson, writeJson } from "../util/storage";
+import StoredPhoto from "../photos/storedPhoto";
+
+// Photo.src values with this prefix point at a blob in the photo store; anything else is a remote URL.
+const STORED_PREFIX = 'stored:';
 
 const DEFAULT_PHOTO_WIDTH = 240;
 const DEFAULT_PHOTO_HEIGHT = 240;
@@ -73,8 +77,10 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
         const photoWidth = this.props.photoWidth ?? DEFAULT_PHOTO_WIDTH;
         const photoHeight = this.props.photoHeight ?? DEFAULT_PHOTO_HEIGHT;
 
-        const photos = this.state.photos.map(photo => 
-            <div key={photo.id} className="photo" 
+        const photos = this.state.photos.map(photo => photo.src.startsWith(STORED_PREFIX)
+            ? <StoredPhoto key={photo.id} id={photo.src.slice(STORED_PREFIX.length)}
+                width={photoWidth} height={photoHeight} />
+            : <div key={photo.id} className="photo"
             style={{
                 width: `${photoWidth}px`,
                 height: `${photoHeight}px`,
