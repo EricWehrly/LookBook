@@ -31,13 +31,8 @@ describe('App Component', () => {
     // Check for Google Photos related elements
     expect(screen.getByRole('button', { name: /Add new product/i })).toBeInTheDocument();
     
-    // Albums container should be present
-    const albumsDiv = document.getElementById('albums');
-    expect(albumsDiv).toBeInTheDocument();
-    
-    // Album picker should be present
-    const albumPicker = document.getElementById('albumPicker');
-    expect(albumPicker).toBeInTheDocument();
+    // Photo picker entry point should be present
+    expect(screen.getByRole('button', { name: /Add photos from Google Photos/i })).toBeInTheDocument();
   });
 
   test('creates new look with crypto UUID when no existing look found', async () => {
