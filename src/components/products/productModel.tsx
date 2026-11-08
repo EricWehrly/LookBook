@@ -17,4 +17,19 @@ export default interface ProductModel {
     name? : string;
     type?: ProductType;
     barcode?: string;
+    // Page where the product can be found/bought
+    src?: string;
+    previewImageUrl?: string;
+}
+
+// src and previewImageUrl end up in href/src attributes; only http(s) is
+// accepted so a "javascript:" URL can never be stored or rendered.
+export function isHttpUrl(value: string | undefined): boolean {
+    if (!value) return false;
+    try {
+        const protocol = new URL(value).protocol;
+        return protocol === 'http:' || protocol === 'https:';
+    } catch {
+        return false;
+    }
 }
