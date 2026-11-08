@@ -3,6 +3,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { handler } = require('../../../server/lambda');
 
+export {}; // module marker: isolatedModules rejects a script file
+
 const mockFetchResponse = (body: unknown, init: { status?: number; ok?: boolean } = {}) => {
     const status = init.status ?? 200;
     (global as any).fetch = jest.fn().mockResolvedValue({

@@ -1,3 +1,4 @@
+/* eslint-disable no-script-url -- javascript: URLs are the attack input under test */
 import { ProductType, isHttpUrl } from '../../components/products/productModel';
 import {
     CATALOG_KEY,
