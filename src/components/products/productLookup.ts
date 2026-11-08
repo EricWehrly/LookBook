@@ -11,13 +11,17 @@ export interface ResolvedProduct {
     previewImageUrl?: string;
 }
 
+// productLookup never rejects; callers compare against this name to tell
+// "lookup failed, ask the user" from a real result.
+export const UNRECOGNIZED_NAME = "unrecognized";
+
 export async function productLookup(code: string, format: string): Promise<ResolvedProduct> {
     const resolved = await upcItemDb(code);
     if (resolved) {
         return resolved;
     }
     else return {
-        name: "unrecognized",
+        name: UNRECOGNIZED_NAME,
         barcode: code
     };
 }
@@ -27,9 +31,20 @@ async function upcItemDb(upc: string): Promise<ResolvedProduct | null> {
     if (!upc) return null;
 
     try {
-        const response = await fetch(`${domain}/upc?upc=${upc}`);
+        const response = await fetch(`${domain}/upc?upc=${encodeURIComponent(upc)}`);
+        // 404 (no such product), 429, 5xx: all mean "no usable data"
+        if (!response.ok) return null;
+
         const data = await response.json();
-        return data;
+        if (!data || typeof data !== 'object') return null;
+        if (!data.name && !data.src && !data.previewImageUrl) return null;
+
+        return {
+            name: data.name || '',
+            barcode: data.barcode || upc,
+            src: data.src,
+            previewImageUrl: data.previewImageUrl
+        };
     } catch (error) {
         console.error(error);
         return null;

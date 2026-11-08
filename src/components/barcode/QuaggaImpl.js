@@ -14,6 +14,7 @@ const QuaggaImpl = () => {
     const [cameraError, setCameraError] = useState(null); // error message from failing to access the camera
     const [results, setResults] = useState([]); // list of scanned results
     const [torchOn, setTorch] = useState(false); // toggleable state for "should torch be on"
+    const [manualEntry, setManualEntry] = useState(false); // user chose to type the product in instead of scanning
     const scannerRef = useRef(null); // reference to the scanner element in the DOM
 
     // at start, we need to get a list of the available cameras.  We can do that with Quagga.CameraAccess.enumerateVideoDevices.
@@ -44,9 +45,10 @@ const QuaggaImpl = () => {
         .then(() => Quagga.CameraAccess.disableTorch()) // disable torch at start, in case it was enabled before and we hot-reloaded
         .catch((err) => setCameraError(err));
 
-        // add a previously resolved value so that we can test
-        // without needing to fuss with lining up the camera (every time...)
-        setResults([{ code: '0030878461993', format: 'ean_13' }]);
+        // dev only: a pre-scanned value so we can test without lining up the camera
+        if (process.env.NODE_ENV === 'development') {
+            setResults([{ code: '0030878461993', format: 'ean_13' }]);
+        }
 
         return () => disableCamera();
     }, []);
@@ -75,8 +77,8 @@ const QuaggaImpl = () => {
 
     return (
         <div>
-            {cameraError ? <p>ERROR INITIALIZING CAMERA ${JSON.stringify(cameraError)} -- DO YOU HAVE PERMISSION?</p> : null}
-            {cameras.length === 0 ? <p>Enumerating Cameras, browser may be prompting for permissions beforehand</p> :
+            {cameraError ? <p role="alert">Could not start the camera ({String(cameraError.message || cameraError)}). Check camera permissions, or enter the product manually below.</p> : null}
+            {cameras.length === 0 ? (cameraError ? null : <p>Enumerating Cameras, browser may be prompting for permissions beforehand</p>) :
                 <form>
                     <select onChange={(event) => setCameraId(event.target.value)}>
                         {cameras.map((camera) => (
@@ -89,10 +91,12 @@ const QuaggaImpl = () => {
             }
             <button onClick={onTorchClick}>{torchOn ? 'Disable Torch' : 'Enable Torch'}</button>
             <button onClick={() => setScanning(!scanning) }>{scanning ? 'Stop' : 'Start'}</button>
+            <button onClick={() => setManualEntry(!manualEntry)}>{manualEntry ? 'Cancel manual entry' : 'Enter product manually'}</button>
             <h3>Results:</h3>
             <ul className="results">
-                {results.length === 0 ? <span>None so far...</span> : null}
+                {results.length === 0 && !manualEntry ? <span>None so far...</span> : null}
                 {results.map((result) => (<li key={result.code}><Result result={result} /></li>))}
+                {manualEntry ? <li key="manual-entry"><Result result={{ code: '', format: 'manual' }} /></li> : null}
             </ul>
             
             <div ref={scannerRef} className="scannerRef">
