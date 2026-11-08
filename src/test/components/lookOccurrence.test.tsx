@@ -1,5 +1,5 @@
 import React from 'react';
-import { waitFor } from '@testing-library/react';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { act, render, testUtils } from '../test-utils';
 import { MemoryPhotoStore, setPhotoStore } from '../../components/photos/photoStore';
 import Look from '../../components/looks/look';
@@ -67,6 +67,25 @@ describe('LookOccurrence', () => {
 
       expect(container.querySelector('[data-photo-id="blob1"]')).toBeInTheDocument();
       await waitFor(() => expect(URL.createObjectURL).toHaveBeenCalled());
+      setPhotoStore(null);
+    });
+
+    test('the remove button drops the photo, persists the change and deletes its stored blob', async () => {
+      const store = new MemoryPhotoStore();
+      await store.put('blob1', new Blob(['x']));
+      setPhotoStore(store);
+      URL.createObjectURL = jest.fn(() => 'blob:x');
+      URL.revokeObjectURL = jest.fn();
+      const { ref, container } = mount(look);
+      act(() => { ref.current!.addPhoto(new Photo({ id: 'p1', src: 'stored:blob1' })); });
+      act(() => { ref.current!.addPhoto(new Photo({ id: 'p2', src: 'http://img/2' })); });
+
+      fireEvent.click(container.querySelectorAll('button.removePhoto')[0]);
+
+      expect(ref.current!.photos.map(p => p.id)).toEqual(['p2']);
+      expect(testUtils.getMockStorageData(`${look.id}.${look.created}.photos`))
+        .toEqual([{ id: 'p2', src: 'http://img/2' }]);
+      await waitFor(async () => expect(await store.get('blob1')).toBeUndefined());
       setPhotoStore(null);
     });
 

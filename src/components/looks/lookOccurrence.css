@@ -1,5 +1,30 @@
+.lookOccurrence .photoItem {
+    position: relative;
+    display: inline-block;
+}
+
 .lookOccurrence .photo {
     margin: 4px;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.lookOccurrence .removePhoto {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.lookOccurrence .removePhoto:hover,
+.lookOccurrence .removePhoto:focus-visible {
+    background: rgba(180, 0, 0, 0.85);
 }

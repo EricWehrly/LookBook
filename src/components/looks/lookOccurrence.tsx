@@ -3,6 +3,7 @@ import Look from "./look";
 import './lookOccurrence.css';
 import { readJson, writeJson } from "../util/storage";
 import StoredPhoto from "../photos/storedPhoto";
+import { getPhotoStore } from "../photos/photoStore";
 
 // Photo.src values with this prefix point at a blob in the photo store; anything else is a remote URL.
 const STORED_PREFIX = 'stored:';
@@ -56,6 +57,20 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
         });
     }
 
+    removePhoto(photo: Photo) {
+
+        this.setState(prevState => ({
+            photos: prevState.photos.filter(p => p.id !== photo.id)
+        }), () => {
+            writeJson(this.photosStorageKey, this.state.photos);
+        });
+
+        if (photo.src.startsWith(STORED_PREFIX)) {
+            getPhotoStore().delete(photo.src.slice(STORED_PREFIX.length))
+                .catch((error) => console.error('Could not delete stored photo', photo.id, error));
+        }
+    }
+
     constructor(props: LookOccurrenceProps) {
         super(props);
 
@@ -77,17 +92,19 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
         const photoWidth = this.props.photoWidth ?? DEFAULT_PHOTO_WIDTH;
         const photoHeight = this.props.photoHeight ?? DEFAULT_PHOTO_HEIGHT;
 
-        const photos = this.state.photos.map(photo => photo.src.startsWith(STORED_PREFIX)
-            ? <StoredPhoto key={photo.id} id={photo.src.slice(STORED_PREFIX.length)}
-                width={photoWidth} height={photoHeight} />
-            : <div key={photo.id} className="photo"
-            style={{
-                width: `${photoWidth}px`,
-                height: `${photoHeight}px`,
-                backgroundImage: `url('${photo.src}=w${photoWidth}-h${photoHeight}')`
-            }}>
-            </div>
-        );
+        const photos = this.state.photos.map(photo => <div key={photo.id} className="photoItem">
+            {photo.src.startsWith(STORED_PREFIX)
+                ? <StoredPhoto id={photo.src.slice(STORED_PREFIX.length)}
+                    width={photoWidth} height={photoHeight} />
+                : <div className="photo"
+                    style={{
+                        width: `${photoWidth}px`,
+                        height: `${photoHeight}px`,
+                        backgroundImage: `url('${photo.src}=w${photoWidth}-h${photoHeight}')`
+                    }} />}
+            <button type="button" className="removePhoto" aria-label="Remove photo"
+                onClick={() => this.removePhoto(photo)}>&times;</button>
+        </div>);
 
         return <div className="lookOccurrence">
             {photos}
