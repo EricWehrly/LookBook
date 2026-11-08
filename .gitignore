@@ -27,3 +27,5 @@ infrastructure/.terraform
 .terraform.lock*
 tfplan
 infrastructure/*.zip
+infrastructure/terraform.tfstate*
+infrastructure/response.json
