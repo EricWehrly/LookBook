@@ -12,7 +12,7 @@
 - [x] **Priority 1: Fix crypto polyfill** - Add crypto-js or global crypto mock for Jest
 - [x] **Configure Jest environment** - Set up proper test environment variables
 - [x] **Add test utilities** - Create helper functions for common test patterns
-- [ ] **Mock external dependencies** - Google Photos API, Quagga2 barcode scanner
+- [ ] **Mock external dependencies** - Google Photos API, ~~Quagga2 barcode scanner~~ (Quagga2 done: see `src/test/components/quaggaImpl.test.tsx`)
 - [x] **LocalStorage mocking** - Set up proper localStorage testing utilities
 
 ### 2. Test Categories & Coverage Levels
@@ -27,14 +27,14 @@
 - [ ] **GoogleAuthService** - Authentication state management
 - [ ] **GooglePhotosService** - API interaction mocking
 - [ ] **Persistence Layer** - localStorage CRUD operations
-- [ ] **Product Lookup Service** - barcode to product mapping
+- [x] **Product Lookup Service** - barcode to product mapping
 
 #### **Component Testing (Behavior & Integration)**
 - [x] **Core Components**
   - [x] `App.tsx` - routing and initial state
   - [x] `Look` component - CRUD operations, state management
   - [ ] `AlbumPicker` - Google Photos integration
-  - [ ] `ProductScanner` - barcode scanning integration
+  - [x] `ProductScanner` - barcode scanning integration
 
 #### **Utility & Helper Testing**
 - [x] **Persisted base class** - inheritance behavior
@@ -52,7 +52,7 @@
 
 #### **Phase 2: Service Integration (Week 2)**
 6. [ ] **Google Photos service mocking** - API integration tests
-7. [ ] **Product scanner integration** - Quagga2 mocking and testing
+7. [x] **Product scanner integration** - Quagga2 mocking and testing
 8. [ ] **Authentication flow tests** - GoogleAuthService testing
 9. [ ] **Date/time filtering tests** - Look occurrence logic
 
@@ -166,11 +166,11 @@ src/
 - [ ] Network timeout scenarios
 
 #### **Product Scanner Tests**
-- [ ] Barcode detection simulation
-- [ ] Camera permission handling
-- [ ] Product lookup by barcode
-- [ ] Scanner state management
-- [ ] Error recovery scenarios
+- [x] Barcode detection simulation
+- [x] Camera permission handling
+- [x] Product lookup by barcode
+- [x] Scanner state management
+- [x] Error recovery scenarios
 
 #### **Persistence Layer Tests**
 - [ ] CRUD operations via Persisted base class
@@ -178,6 +178,15 @@ src/
 - [ ] Data serialization/deserialization
 - [ ] Collection management
 - [ ] Cross-component data sharing
+
+#### **Product Tracking Tests** (done)
+- [x] `ProductModel` / `isHttpUrl`, storage wrapper and catalog store - `src/test/components/productStore.test.ts`
+- [x] `productLookup` with fetch mocked - `src/test/components/productLookup.test.ts`
+- [x] `Products` list and remove - `src/test/components/products.test.tsx`
+- [x] barcode `Result` form (save, validation, manual entry) - `src/test/components/productResult.test.tsx`
+- [x] `QuaggaImpl` with Quagga2 mocked - `src/test/components/quaggaImpl.test.tsx`
+- [x] `/looks/:id` and `/product?look=` routes - `src/test/components/appProductRoutes.test.tsx`
+- [x] `server/lambda.js` handler with fetch mocked - `src/test/server/lambda.test.ts`
 
 ### 8. Test Quality Standards
 
