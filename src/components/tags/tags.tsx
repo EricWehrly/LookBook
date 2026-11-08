@@ -1,8 +1,10 @@
 import { Component } from "react";
+import { readJson, writeJson } from "../util/storage";
+
+export type TagParentType = 'look' | 'product';
 
 interface TagProps {
-    // TODO: Would love to have this typed
-    parentTypeName: string,
+    parentTypeName: TagParentType,
     parentId: string,
     tags? : string[]
 }
@@ -13,16 +15,13 @@ interface TagState {
 
 export default class Tags extends Component<TagProps, TagState> {
 
-    private parentTypeName : string;
-    private parentId : string;
-
     private get storageKey() {
-        return `${this.parentId}.tags`;
+        return `${this.props.parentId}.tags`;
     }
 
     render() {
 
-        const tagElements = this.state.tags?.length ? this.state.tags.map(tag => 
+        const tagElements = this.state.tags.length ? this.state.tags.map(tag => 
             <span key={tag} className="tag">{tag}</span>
         ) : '';
 
@@ -38,7 +37,7 @@ export default class Tags extends Component<TagProps, TagState> {
         // const name = window.prompt('Give your tag a name!');
         const name = 'test';
         if(name) {
-            if(this.state.tags && this.state.tags.includes(name)) {
+            if(this.state.tags.includes(name)) {
                 console.warn('exists.');
                 return;
             }
@@ -49,26 +48,20 @@ export default class Tags extends Component<TagProps, TagState> {
             this.setState({
                 tags: newTags
             });
-            localStorage.setItem(this.storageKey, JSON.stringify(newTags));
+            writeJson(this.storageKey, newTags);
         }
-        console.log(this.state.tags);
     }
 
     constructor(props : TagProps) {
 
         super(props);
 
-        this.parentId = props.parentId;
-        this.parentTypeName = props.parentTypeName;
-
-        if(Array.isArray(props.tags)) {
-            this.setState({
-                tags: props.tags
-            });
-        } else {
-            this.state = {
-                tags: []
-            }
-        }
+        // Explicit props win over what was stored; setState is not available before mount.
+        const stored = readJson<unknown>(this.storageKey);
+        this.state = {
+            tags: Array.isArray(props.tags) ? props.tags
+                : Array.isArray(stored) ? stored.filter((t): t is string => typeof t === 'string')
+                : []
+        };
     }
 }

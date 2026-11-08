@@ -26,7 +26,7 @@
 #### **Service Layer Testing**
 - [ ] **GoogleAuthService** - Authentication state management
 - [ ] **GooglePhotosService** - API interaction mocking
-- [ ] **Persistence Layer** - localStorage CRUD operations
+- [x] **Persistence Layer** - localStorage CRUD operations (`storage.test.ts`, `persisted.test.tsx`)
 - [x] **Product Lookup Service** - barcode to product mapping
 
 #### **Component Testing (Behavior & Integration)**
@@ -38,7 +38,7 @@
 
 #### **Utility & Helper Testing**
 - [x] **Persisted base class** - inheritance behavior
-- [ ] **OnScreenConsole** - debug utility functionality
+- [x] **OnScreenConsole** - debug utility functionality (`onScreenConsole.test.tsx`)
 - [x] **Look occurrence management** - date-based filtering
 
 ### 3. Test Implementation Priority
@@ -54,11 +54,11 @@
 6. [ ] **Google Photos service mocking** - API integration tests
 7. [x] **Product scanner integration** - Quagga2 mocking and testing
 8. [ ] **Authentication flow tests** - GoogleAuthService testing
-9. [ ] **Date/time filtering tests** - Look occurrence logic
+9. [x] **Date/time filtering tests** - Look occurrence logic
 
 #### **Phase 3: Edge Cases & Error Handling (Week 3)**
 10. [ ] **Error boundary testing** - Component failure scenarios
-11. [ ] **LocalStorage failure scenarios** - Quota exceeded, corrupt data
+11. [x] **LocalStorage failure scenarios** - Quota exceeded, corrupt data
 12. [ ] **Network failure simulation** - Google API unavailable
 13. [ ] **Performance testing** - Large datasets, memory usage
 
@@ -148,15 +148,19 @@ src/
 └── App.test.tsx                # Updated integration tests
 ```
 
+**Actual layout**: the suites that run live in `src/test/components/*.test.ts(x)` (helpers in `src/test/`). `tests/components/looks/` at the repo root is outside CRA's `roots` and is never executed.
+
+**Running from a worktree under `.claude/`**: CRA's generated `testMatch` glob escapes the `.claude` segment, so `yarn test` reports "No tests found". Pass the match explicitly: `CI=true yarn test --watchAll=false --testMatch "**/src/**/*.test.{ts,tsx}"`.
+
 ### 7. Key Test Scenarios
 
 #### **Look Component Tests**
-- [ ] Create new look with auto-generated ID
-- [ ] Load existing look from localStorage  
-- [ ] Save look changes to localStorage
-- [ ] Handle invalid look ID gracefully
-- [ ] Date-based name generation
-- [ ] State management for editing
+- [x] Create new look with auto-generated ID
+- [x] Load existing look from localStorage
+- [x] Save look changes to localStorage
+- [x] Handle invalid look ID gracefully
+- [x] Date-based name generation
+- [x] State management for editing
 
 #### **Google Photos Integration Tests**  
 - [ ] Authentication state changes
@@ -173,10 +177,10 @@ src/
 - [x] Error recovery scenarios
 
 #### **Persistence Layer Tests**
-- [ ] CRUD operations via Persisted base class
-- [ ] LocalStorage quota management
-- [ ] Data serialization/deserialization
-- [ ] Collection management
+- [x] CRUD operations via Persisted base class
+- [x] LocalStorage quota management
+- [x] Data serialization/deserialization
+- [x] Collection management
 - [ ] Cross-component data sharing
 
 #### **Product Tracking Tests** (done)

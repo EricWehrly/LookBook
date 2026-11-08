@@ -1,8 +1,10 @@
 import { Component } from 'react';
 import Tags from '../tags/tags';
 import './look.css';
-import LookModel from './lookModel';
-import { GetLook } from './looks';
+import LookModel, { LookProps } from './lookModel';
+import { AddLookToIndex, GetLook } from './looks';
+import { nameFromDate } from './lookName';
+import { writeJson } from '../util/storage';
 import { EditText, onSaveProps } from 'react-edit-text';
 import 'react-edit-text/dist/index.css';
 import PhotoPicker from '../photos/photopicker';
@@ -14,20 +16,18 @@ interface LookState {
     setText: { (value: React.SetStateAction<string>): void; }
 }
 
-export default class Look extends Component<LookModel> implements LookModel {
+export default class Look extends Component<LookProps> implements LookModel {
 
-    // tbh we probly only care about LookModels
     static Looks : { [id: string] : Look } = {};
 
-    // hack
+    // The most recently constructed Look, whichever route created it.
     static #current: Look;
     static get Current() { return Look.#current; }
 
     private _id : string;
     name?: string;
 
-    // TODO: (big lift) Move 'created' to instance ...
-    created!: Date; // TODO: the exclamation asserts it's "definitely" getting assigned in constructor...
+    created: Date;
     instances : LookOccurrence[] = [];
 
     state : LookState = {
@@ -51,7 +51,6 @@ export default class Look extends Component<LookModel> implements LookModel {
     // <h2 contentEditable="true" onInput={this.h2Edited.bind(this)}>{this.name || "Today's Look"}</h2>
 
     render() {
-        // TODO: Name should be the selected date if null ... today if date is today
         return <div>
             <div className="look">
             <EditText
@@ -79,86 +78,50 @@ export default class Look extends Component<LookModel> implements LookModel {
         this.save();
     }
 
-    constructor(options: LookModel) {
+    constructor(options: LookProps) {
         super(options);
 
         Look.#current = this;
 
         if(options.id && options.id.length > 0) {
-            console.log(`Using provided id ${options.id}`);
-            this._id = options.id;
+            const stored = GetLook(options.id);
+            if(stored == null) {
+                throw Error(`bad look id: nothing stored under '${options.id}'`);
+            }
 
-            this.buildFromStorage(this._id);
+            this._id = options.id;
+            this.created = stored.created;
+            this.applyName(stored.name || nameFromDate(this.created));
 
             Look.Looks[this._id] = this;
         } else {
-            console.log('Trying to generate new look');
             this._id = crypto.randomUUID();
-            this.defaultLook(options);
+            this.created = options.created ?? new Date();
+            this.applyName(options.name || nameFromDate(this.created));
+
+            Look.Looks[this._id] = this;
+            AddLookToIndex(this._id);
+
+            this.save();
         }
     }
 
-    private defaultLook(options: LookModel) {
-
-        if (options.name) {
-            this.name = options.name;
-        } else {
-            this.name = this.nameFromDate(new Date());
-        }
-        // TODO: somehow track "name" with state
+    // name is mirrored into state so the title can render before mount; setText keeps them in step afterwards.
+    private applyName(name: string) {
+        this.name = name;
         this.state = {
-            name: this.name,
+            name,
             setText: this.state.setText
         };
-        if (options.created) this.created = options.created;
-        else this.created = new Date();
-
-        Look.Looks[this._id] = this;
-        // TODO: We need a generic persistence interface layer that can implement localStorage vs alternates
-        localStorage.setItem('looks', JSON.stringify(Object.keys(Look.Looks)));
-
-        this.save();
-    }
-
-    private buildFromStorage(id : string) {
-
-        const lookModel = GetLook(id);
-        if(lookModel == null) {
-            throw Error('bad');
-        }
-
-        // TODO: somehow track "name" with state
-        this.name = lookModel.name;
-        if(!this.name) {
-            this.name = this.nameFromDate(this.created);
-        }
-        this.state = {
-            name: lookModel.name,
-            setText: this.state.setText
-        };
-
-        if(lookModel.created) {
-            this.created = lookModel.created;
-        }
-        else this.created = new Date();
     }
 
     private save() {
 
-        console.log(`saving look ${this.id}`);
-
-        const storageObject = {
+        const storageObject : LookModel = {
             id: this._id,
             name: this.name,
             created: this.created
         };
-        localStorage.setItem(this.storageKey, JSON.stringify(storageObject));
-    }
-
-    private nameFromDate(date: Date) : string {
-
-        const name = "Today's Look";
-
-        return name;
+        writeJson(this.storageKey, storageObject);
     }
 }

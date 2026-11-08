@@ -1,7 +1,6 @@
 import { testUtils } from '../test-utils';
 import { GetLook, GetLooks } from '../../components/looks/looks';
 import Look from '../../components/looks/look';
-import LookModel from '../../components/looks/lookModel';
 
 describe('Looks Utilities', () => {
   beforeEach(() => {
@@ -41,29 +40,137 @@ describe('Looks Utilities', () => {
       expect(retrievedLook!.created!.getTime()).toBe(testDate.getTime());
     });
 
-    test('handles look with null created date', () => {
-      // Manually create storage data without created date
+    test('stamps a look stored with a null created date and keeps that date', () => {
       const lookId = 'test-look-id';
       testUtils.setMockStorageData(lookId, {
         id: lookId,
         name: 'No Date Look',
         created: null
       });
-      
+
       const retrievedLook = GetLook(lookId);
-      
+
       expect(retrievedLook).toBeTruthy();
       expect(retrievedLook!.name).toBe('No Date Look');
-      expect(retrievedLook!.created).toBeNull();
+      expect(retrievedLook!.created).toBeInstanceOf(Date);
+
+      // written back, so later reads return the same instant
+      expect(testUtils.getMockStorageData(lookId).created).toBe(retrievedLook!.created.toISOString());
+      expect(GetLook(lookId)!.created.getTime()).toBe(retrievedLook!.created.getTime());
     });
 
-    test('handles corrupted JSON gracefully', () => {
-      // This test verifies that invalid JSON doesn't crash the function
-      // In the current implementation, JSON.parse would throw, but we can test this behavior
+    test('stamps a look stored with an unparseable created date', () => {
+      testUtils.setMockStorageData('bad-date', { id: 'bad-date', created: 'not a date' });
+
+      const retrievedLook = GetLook('bad-date');
+
+      expect(retrievedLook!.created).toBeInstanceOf(Date);
+      expect(isNaN(retrievedLook!.created.getTime())).toBe(false);
+    });
+
+    test('falls back to the storage key when the stored object has no id', () => {
+      testUtils.setMockStorageData('key-id', { name: 'No Id', created: '2023-05-01T00:00:00Z' });
+
+      expect(GetLook('key-id')!.id).toBe('key-id');
+    });
+
+    test('returns null for corrupted JSON instead of throwing', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
       const lookId = 'corrupted-look';
       localStorage.setItem(lookId, '{invalid json');
-      
-      expect(() => GetLook(lookId)).toThrow();
+
+      expect(GetLook(lookId)).toBeNull();
+      jest.restoreAllMocks();
+    });
+
+    test('returns null for stored JSON that is not a look object', () => {
+      localStorage.setItem('array-look', '[1,2]');
+      localStorage.setItem('null-look', 'null');
+      localStorage.setItem('number-look', '42');
+
+      expect(GetLook('array-look')).toBeNull();
+      expect(GetLook('null-look')).toBeNull();
+      expect(GetLook('number-look')).toBeNull();
+    });
+
+    test('ignores a non-string name', () => {
+      testUtils.setMockStorageData('odd-name', { id: 'odd-name', name: 7, created: '2023-05-01T00:00:00Z' });
+
+      expect(GetLook('odd-name')!.name).toBeUndefined();
+    });
+
+    test('does not log while reading', () => {
+      const look = new Look({ name: 'Quiet' });
+      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+      GetLook(look.id);
+
+      expect(log).not.toHaveBeenCalled();
+      jest.restoreAllMocks();
+    });
+
+    describe('caching', () => {
+      test('does not re-parse an unchanged entry', () => {
+        const look = new Look({ name: 'Cached' });
+        GetLook(look.id);
+        const parse = jest.spyOn(JSON, 'parse');
+
+        GetLook(look.id);
+        GetLook(look.id);
+
+        expect(parse).not.toHaveBeenCalled();
+        jest.restoreAllMocks();
+      });
+
+      test('returns independent copies so a caller cannot corrupt the cache', () => {
+        const look = new Look({ name: 'Original' });
+
+        const first = GetLook(look.id)!;
+        first.name = 'Mutated';
+
+        expect(GetLook(look.id)!.name).toBe('Original');
+      });
+
+      test('picks up a change saved by the Look', () => {
+        const look = new Look({ name: 'Before' });
+        expect(GetLook(look.id)!.name).toBe('Before');
+
+        look.name = 'After';
+        look.handleSave({} as any);
+
+        expect(GetLook(look.id)!.name).toBe('After');
+      });
+
+      test('picks up a change written straight to storage', () => {
+        const look = new Look({ name: 'Before' });
+        GetLook(look.id);
+
+        testUtils.setMockStorageData(look.id, { id: look.id, name: 'External', created: look.created });
+
+        expect(GetLook(look.id)!.name).toBe('External');
+      });
+
+      test('forgets an entry removed from storage', () => {
+        const look = new Look({ name: 'Doomed' });
+        GetLook(look.id);
+
+        localStorage.removeItem(look.id);
+
+        expect(GetLook(look.id)).toBeNull();
+      });
+
+      test('does not cache corrupt data', () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => {});
+        const look = new Look({ name: 'Fine' });
+        GetLook(look.id);
+        localStorage.setItem(look.id, '{bad');
+        expect(GetLook(look.id)).toBeNull();
+
+        testUtils.setMockStorageData(look.id, { id: look.id, name: 'Repaired', created: look.created });
+
+        expect(GetLook(look.id)!.name).toBe('Repaired');
+        jest.restoreAllMocks();
+      });
     });
   });
 
@@ -128,11 +235,40 @@ describe('Looks Utilities', () => {
       expect(allLooks).toHaveLength(0);
     });
 
-    test('handles corrupted looks array in localStorage', () => {
-      // Set invalid JSON for looks array
+    test('treats a corrupted looks array in localStorage as empty', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
       localStorage.setItem('looks', '{invalid json');
-      
-      expect(() => GetLooks({})).toThrow();
+
+      expect(GetLooks({})).toEqual([]);
+      jest.restoreAllMocks();
+    });
+
+    test('treats a looks index that is not an array as empty', () => {
+      localStorage.setItem('looks', '{"a":1}');
+
+      expect(GetLooks({})).toEqual([]);
+    });
+
+    test('skips an entry whose stored look is corrupt', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const good = new Look({ name: 'Good' });
+      const bad = new Look({ name: 'Bad' });
+      localStorage.setItem(bad.id, '{broken');
+
+      const results = GetLooks({});
+
+      expect(results.map(l => l.id)).toEqual([good.id]);
+      jest.restoreAllMocks();
+    });
+
+    test('a corrupt index does not stop new looks from being listed', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      localStorage.setItem('looks', '{invalid json');
+
+      const look = new Look({ name: 'Fresh' });
+
+      expect(GetLooks({}).map(l => l.id)).toEqual([look.id]);
+      jest.restoreAllMocks();
     });
 
     test('skips looks that cannot be retrieved', () => {

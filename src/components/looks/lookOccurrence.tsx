@@ -1,13 +1,17 @@
 import { Component } from "react";
 import Look from "./look";
 import './lookOccurrence.css';
+import { readJson, writeJson } from "../util/storage";
 
-// TODO: Maybe we want these controllable some other way?
-const photoWidth = 240;
-const photoHeight = 240;
+const DEFAULT_PHOTO_WIDTH = 240;
+const DEFAULT_PHOTO_HEIGHT = 240;
 
 interface LookOccurrenceProps {
     look: Look;
+    // The day this occurrence is for. Defaults to the look's own date.
+    created?: Date;
+    photoWidth?: number;
+    photoHeight?: number;
   }
 
 interface LookOccurrenceState {
@@ -23,18 +27,15 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
     }
 
     look: Look;
+    created: Date;
 
     get photos() {
         return this.state.photos;
     }
 
-    // TODO: 'created' should ONLY live in instance
-    get created() {
-        return this.look.created;
-    }
-
+    // The key embeds Date#toString of the occurrence date; changing that format orphans every stored photo list.
     private get storageKey() {
-        return `${this.look.storageKey}.${this.look.created}`;
+        return `${this.look.storageKey}.${this.created}`;
     }
 
     private get photosStorageKey() {
@@ -47,27 +48,20 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
         this.setState(prevState => ({
             photos: [...prevState.photos, newPhoto]
         }), () => {
-            localStorage.setItem(this.photosStorageKey, JSON.stringify(this.state.photos));
-            console.log('hey eric check!');
+            writeJson(this.photosStorageKey, this.state.photos);
         });
     }
 
     constructor(props: LookOccurrenceProps) {
         super(props);
-        
+
         this.look = props.look;
+        this.created = props.created ?? props.look.created;
 
+        const photos = readJson<Photo[]>(this.photosStorageKey);
         this.state = {
-            photos: []
+            photos: Array.isArray(photos) ? photos : []
         };
-
-        const photos = localStorage.getItem(this.photosStorageKey);
-        if(photos) {
-            const parsed = JSON.parse(photos);
-            this.state = {
-                photos: parsed
-            };
-        }
 
         if(!LookOccurrence.current) {
             LookOccurrence.current = this;
@@ -75,7 +69,10 @@ export class LookOccurrence extends Component<LookOccurrenceProps, LookOccurrenc
     }
 
     render() {
-        
+
+        const photoWidth = this.props.photoWidth ?? DEFAULT_PHOTO_WIDTH;
+        const photoHeight = this.props.photoHeight ?? DEFAULT_PHOTO_HEIGHT;
+
         const photos = this.state.photos.map(photo => 
             <div key={photo.id} className="photo" 
             style={{

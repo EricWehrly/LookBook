@@ -38,7 +38,11 @@ if (typeof global.localStorage === 'undefined') {
   global.localStorage = localStorageMock as any;
 }
 
-// Helper function to clear localStorage in tests
-export const clearLocalStorage = () => localStorageMock.clear();
+// Clears the storage the app code actually sees: jsdom provides its own
+// localStorage, so the mock above is only the fallback and clearing it alone leaves data behind.
+export const clearLocalStorage = () => {
+  localStorageMock.clear();
+  localStorage.clear();
+};
 
 export default localStorageMock;

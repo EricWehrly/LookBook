@@ -1,10 +1,9 @@
+// The persisted shape of a look. GetLook always returns id and created filled in.
 export default interface LookModel {
-
-    // TODO: id and created shouldn't be nullable ...
-    // fix referencing in App.tsx...
-
-    id? : string;
+    id : string;
     name? : string;
-    // TODO: (big lift) Move to instance ...
-    created?: Date;
+    created : Date;
 }
+
+// What a Look is constructed from: everything optional, defaults are generated.
+export type LookProps = Partial<LookModel>;
