@@ -1,11 +1,13 @@
 import React from 'react';
 import { render, screen, testUtils } from './test/test-utils';
 import App from './App';
+import Look from './components/looks/look';
 
 describe('App Component', () => {
   beforeEach(() => {
-    // Clear localStorage before each test
+    // Clear localStorage and the static looks registry before each test
     testUtils.clearStorage();
+    Look.Looks = {};
   });
 
   test('renders main app structure', () => {

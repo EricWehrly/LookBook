@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { getStore, readJson, writeJson } from "./storage";
 
 export interface PersistedModel {
     id? : string;
@@ -6,7 +7,11 @@ export interface PersistedModel {
 
 type PersistMap = { [id: string] : Persisted };
 
-// export default class Look extends Component<LookModel> implements LookModel {
+// Subclasses are stored under their id and indexed under the subclass name.
+// buildFromStorage/create run from this constructor, before the subclass's own
+// field initializers: a field declared as `name?: string` is reset to undefined
+// afterwards, wiping what those methods set. Re-read from storage (or assign) in
+// the subclass constructor after super().
 export default abstract class Persisted extends Component<PersistedModel> implements PersistedModel {
     private _id : string;
 
@@ -16,44 +21,34 @@ export default abstract class Persisted extends Component<PersistedModel> implem
         super(options);
 
         if(options.id && options.id.length > 0) {
-            console.log(`Using provided id ${options.id}`);
             this._id = options.id;
 
             this.buildFromStorage(this._id);
         } else {
-            console.log('Trying to generate new obj...');
             this._id = crypto.randomUUID();
             this.create(options);
         }
 
-        // TODO: see if we can separate method
-        // add to collection of persisted objects
-        // const list = (this.constructor as any).List = (this.constructor as any).List || {};
-        // list[this._id] = this;
-        localStorage.setItem(this.id, this.serialize());
-        this.updateteCollection(this.constructor, this);
+        getStore().setItem(this.id, this.serialize());
+        this.updateCollection(this.constructor, this);
     }
 
-    // TODO: return type <T extends Persisted>
     abstract buildFromStorage(id: string): void;
     abstract create(options: PersistedModel): void;
     abstract serialize(): string;
 
-    static Get(id: string) {
-
-        const serialized = localStorage.getItem(id);
-        if(!serialized) return null;
-        const unserialized = JSON.parse(serialized);
-        return unserialized;
+    // Returns null when nothing is stored under id or the stored JSON is corrupt.
+    static Get<T = any>(id: string): T | null {
+        return readJson<T>(id);
     }
 
-    private updateteCollection(constructor: Function, persisted: Persisted) {
+    private updateCollection(constructor: Function, persisted: Persisted) {
 
         const list = this.GetCollection();
 
         list[persisted.id] = persisted;
         const keys = Object.keys(list);
-        localStorage.setItem(constructor.name, JSON.stringify(keys));
+        writeJson(constructor.name, keys);
     }
 
     GetCollection(): PersistMap {
@@ -70,7 +65,6 @@ export default abstract class Persisted extends Component<PersistedModel> implem
             get: (target: any, prop: string) => {
                 if (prop === '__isLoaded') return true; // Custom property to check if loaded
                 if (!target.__isLoaded) {
-                    // Assuming Persisted.Get(key) is synchronous for simplicity
                     const persisted = Persisted.Get(key);
                     if (persisted) {
                         Object.assign(target, persisted, { __isLoaded: true });
@@ -88,9 +82,8 @@ export default abstract class Persisted extends Component<PersistedModel> implem
         const list: PersistMap = {};
         constructor.List = list;
 
-        const storageSerialized = localStorage.getItem(constructor.name);
-        if(storageSerialized) {
-            const keys = JSON.parse(storageSerialized);
+        const keys = readJson<string[]>(constructor.name);
+        if(Array.isArray(keys)) {
             keys.forEach((key: string) => {
                 list[key] = this.lazyLoadPersistedObject(key);
             });
