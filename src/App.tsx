@@ -12,7 +12,6 @@ function App() {
     day: new Date()
   });
   const lookId = looks.length > 0 ? looks[0].id : undefined;
-  console.log(looks);
 
   // TODO: Move GooglePhotosAuthButton into look, or into photo places
   // but it also needs to be some kind of singleton?
@@ -21,8 +20,8 @@ function App() {
       <OnScreenConsole />
       <Router>
         <Routes>
-        <Route path="/index.html" element={<Look id={lookId || ''} />} />
-        <Route path="/" element={<Look id={lookId || ''} />} />
+        <Route path="/index.html" element={<Look id={lookId} />} />
+        <Route path="/" element={<Look id={lookId} />} />
           <Route path="/product" element={<ProductScanner />} />
           <Route path="/looks/:id" element={<Look />} />
           <Route path="/persistenceTest" element={<PersistTest />} />

@@ -2,7 +2,9 @@ import React from 'react';
 import { render, screen, testUtils } from '../test-utils';
 import Look from '../../components/looks/look';
 import { GetLook, GetLooks } from '../../components/looks/looks';
-import LookModel from '../../components/looks/lookModel';
+import { nameFromDate } from '../../components/looks/lookName';
+import { KeyValueStore, setStore } from '../../components/util/storage';
+import { LookProps } from '../../components/looks/lookModel';
 
 describe('Look Component', () => {
   beforeEach(() => {
@@ -29,7 +31,7 @@ describe('Look Component', () => {
 
     test('creates look with provided options', () => {
       const testDate = new Date('2023-01-01');
-      const lookData: LookModel = {
+      const lookData: LookProps = {
         name: 'Test Look',
         created: testDate
       };
@@ -127,6 +129,51 @@ describe('Look Component', () => {
       expect(look.name).toBe('Custom Look Name');
     });
 
+    test('defaults the name to the look date when that is not today', () => {
+      const created = new Date('2020-03-04T12:00:00');
+      const look = new Look({ created });
+
+      expect(look.name).toBe(nameFromDate(created));
+      expect(look.name).not.toBe("Today's Look");
+      expect(look.state.name).toBe(look.name);
+    });
+
+    test("defaults the name to Today's Look when the look date is today", () => {
+      const look = new Look({ created: new Date() });
+
+      expect(look.name).toBe("Today's Look");
+      expect(look.state.name).toBe("Today's Look");
+    });
+
+    test('an empty provided name falls back to the default', () => {
+      const created = new Date('2020-03-04T12:00:00');
+
+      expect(new Look({ name: '', created }).name).toBe(nameFromDate(created));
+    });
+
+    test('a stored look without a name gets a name from its stored date, not from now', () => {
+      testUtils.setMockStorageData('nameless', { id: 'nameless', created: '2020-03-04T12:00:00' });
+
+      const look = new Look({ id: 'nameless' });
+
+      expect(look.name).toBe(nameFromDate(new Date('2020-03-04T12:00:00')));
+      expect(look.name).not.toBe("Today's Look");
+      expect(look.state.name).toBe(look.name);
+    });
+
+    test('a stored look with an empty name is named from its date', () => {
+      testUtils.setMockStorageData('empty-name', { id: 'empty-name', name: '', created: new Date().toISOString() });
+
+      expect(new Look({ id: 'empty-name' }).name).toBe("Today's Look");
+    });
+
+    test('a loaded look shows its stored name in state', () => {
+      const original = new Look({ name: 'Stored' });
+      Look.Looks = {};
+
+      expect(new Look({ id: original.id }).state.name).toBe('Stored');
+    });
+
     test('setText method updates name and state', () => {
       const look = new Look({ name: 'Original Name' });
       
@@ -222,6 +269,88 @@ describe('Look Component', () => {
       const look = new Look({ id: 'test-id' });
       expect(look.created).toBeInstanceOf(Date);
       expect(look.name).toBe('No Date Look');
+    });
+  });
+
+  describe('Looks index', () => {
+    test('keeps ids stored by earlier sessions when a new look is created', () => {
+      testUtils.setMockStorageData('looks', ['from-last-week']);
+
+      const look = new Look({ name: 'This week' });
+
+      expect(testUtils.getMockStorageData('looks')).toEqual(['from-last-week', look.id]);
+    });
+
+    test('does not duplicate an id when an existing look is loaded', () => {
+      const look = new Look({ name: 'Once' });
+      Look.Looks = {};
+
+      new Look({ id: look.id });
+
+      expect(testUtils.getMockStorageData('looks')).toEqual([look.id]);
+    });
+  });
+
+  describe('Persistence layer', () => {
+    test('reads and writes through the replacement store, not localStorage', () => {
+      const data: Record<string, string> = {};
+      const memory: KeyValueStore = {
+        getItem: (k) => (k in data ? data[k] : null),
+        setItem: (k, v) => { data[k] = v; },
+        removeItem: (k) => { delete data[k]; }
+      };
+      const previous = setStore(memory);
+      try {
+        const look = new Look({ name: 'In memory' });
+        expect(JSON.parse(data[look.id]).name).toBe('In memory');
+        expect(JSON.parse(data['looks'])).toEqual([look.id]);
+        expect(localStorage.getItem(look.id)).toBeNull();
+
+        Look.Looks = {};
+        expect(new Look({ id: look.id }).name).toBe('In memory');
+      } finally {
+        setStore(previous);
+      }
+    });
+
+    test('creating a look survives a failing localStorage (quota exceeded)', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new DOMException('quota exceeded', 'QuotaExceededError');
+      });
+
+      let look: Look | undefined;
+      expect(() => { look = new Look({ name: 'Unsaved' }); }).not.toThrow();
+      expect(look!.name).toBe('Unsaved');
+      jest.restoreAllMocks();
+      expect(localStorage.getItem(look!.id)).toBeNull();
+    });
+
+    test('loading a look whose stored JSON is corrupt throws the not-found error', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      localStorage.setItem('corrupt', '{nope');
+
+      expect(() => new Look({ id: 'corrupt' })).toThrow('bad');
+      jest.restoreAllMocks();
+    });
+
+    test('saves the created date so it round-trips', () => {
+      const created = new Date('2023-06-15T10:30:00Z');
+      const look = new Look({ created });
+
+      expect(testUtils.getMockStorageData(look.id).created).toBe(created.toISOString());
+    });
+
+    test('does not log while creating, saving or loading', () => {
+      const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+
+      const look = new Look({ name: 'Quiet' });
+      look.handleSave({} as any);
+      Look.Looks = {};
+      new Look({ id: look.id });
+
+      expect(log).not.toHaveBeenCalled();
+      jest.restoreAllMocks();
     });
   });
 
